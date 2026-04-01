@@ -348,7 +348,7 @@ const FALLBACK_QUESTIONS = [
 // ══════════════════════════════════════════════════
 //  INIT SUPABASE
 // ══════════════════════════════════════════════════
-let supabase = null;
+let sbClient = null;
 let isOnline = false;
 
 function initSupabase() {
@@ -357,7 +357,7 @@ function initSupabase() {
     return false;
   }
   try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     isOnline = true;
     return true;
   } catch(e) {
@@ -365,7 +365,6 @@ function initSupabase() {
     return false;
   }
 }
-
 // ══════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════
