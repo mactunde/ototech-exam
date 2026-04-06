@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ototech Admin — Exam Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  :root{
+    --gold:#FFB800;--gold-dim:#FFB80018;--gold-mid:#FFB80040;
+    --green:#00C853;--green-dim:#00C85318;
+    --red:#FF3B30;--red-dim:#FF3B3018;
+    --blue:#4FC3F7;
+    --bg:#07090A;--surface:#0E1114;--surface2:#151A1E;--surface3:#1C2228;
+    --border:#1E2830;--text:#EDF2F7;--muted:#4A6070;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 0%,#FFB80010 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+  /* ADMIN LOGIN */
+  #admin-login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:0;}
+  .login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:420px;text-align:center;}
+  .login-logo{width:56px;height:56px;border-radius:16px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#080A08;margin:0 auto 20px;}
+  .login-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:6px;}
+  .login-sub{color:var(--muted);font-size:13px;margin-bottom:28px;}
+  .login-field{margin-bottom:14px;text-align:left;}
+  .login-field label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'DM Mono',monospace;display:block;margin-bottom:7px;}
+  .login-field input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;}
+  .login-field input:focus{border-color:var(--gold);}
+  .btn-login{width:100%;padding:14px;background:var(--gold);color:#080A08;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;margin-top:6px;transition:all .2s;}
+  .btn-login:hover{background:#FFC933;}
+  .login-error{color:var(--red);font-size:13px;margin-top:12px;display:none;}
+  .login-error.show{display:block;}
+
+  /* LAYOUT */
+  #app{display:none;}
+  #app.show{display:flex;}
+  .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);min-height:100vh;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:10;}
+  .main{flex:1;overflow:auto;position:relative;z-index:1;}
+
+  /* SIDEBAR */
+  .sb-brand{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+  .sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .sb-icon{width:32px;height:32px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#080A08;}
+  .sb-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;}
+  .sb-name span{color:var(--gold);}
+  .sb-tag{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.05em;}
+  .sb-nav{padding:16px 12px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;color:var(--muted);transition:all .15s;margin-bottom:2px;}
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:var(--gold-dim);color:var(--gold);}
+  .nav-item .ni{font-size:16px;width:20px;text-align:center;}
+  .nav-section{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'DM Mono',monospace;padding:14px 12px 6px;}
+  .live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;margin-left:auto;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .sb-footer{padding:16px;border-top:1px solid var(--border);margin-top:auto;}
+  .btn-logout{width:100%;padding:9px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;transition:all .15s;}
+  .btn-logout:hover{border-color:var(--red);color:var(--red);}
+
+  /* HEADER */
+  .page-header{padding:28px 32px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;}
+  .page-sub{font-size:13px;color:var(--muted);margin-top:3px;}
+  .header-actions{display:flex;gap:10px;}
+  .btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;font-family:'DM Sans',sans-serif;}
+  .btn-primary{background:var(--gold);color:#080A08;}
+  .btn-primary:hover{background:#FFC933;}
+  .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-danger{background:var(--red-dim);color:var(--red);border:1px solid #FF3B3030;}
+  .btn-danger:hover{background:#FF3B3025;}
+
+  /* PANELS */
+  .panel{display:none;padding:28px 32px;}
+  .panel.active{display:block;}
+
+  /* STAT CARDS */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;}
+  .stat-card .sc-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:8px;}
+  .stat-card .sc-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;}
+  .stat-card .sc-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+  /* TABLE */
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px;}
+  .table-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .table-head-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+  .search-input{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 14px;font-size:13px;color:var(--text);outline:none;width:220px;transition:border-color .2s;}
+  .search-input:focus{border-color:var(--gold);}
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;padding:12px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-family:'DM Mono',monospace;border-bottom:1px solid var(--border);background:var(--surface2);}
+  td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:var(--surface2);}
+  .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;}
+  .badge-green{background:var(--green-dim);color:var(--green);}
+  .badge-gold{background:var(--gold-dim);color:var(--gold);}
+  .badge-red{background:var(--red-dim);color:var(--red);}
+  .badge-blue{background:#4FC3F720;color:var(--blue);}
+  .empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
+  .empty-state .es-icon{font-size:36px;margin-bottom:12px;}
+  .empty-state p{font-size:14px;}
+
+  /* MODAL */
+  .modal-overlay{position:fixed;inset:0;background:#00000090;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;animation:fadeUp .25s ease;}
+  .modal-header{padding:24px 24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;}
+  .modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;transition:color .15s;}
+  .modal-close:hover{color:var(--text);}
+  .modal-body{padding:24px;}
+  .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:7px;}
+  .field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+  .field select option{background:var(--surface2);}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .answer-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .answer-opt{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px;transition:all .15s;}
+  .answer-opt.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+
+  /* DETAIL MODAL */
+  .result-detail{background:var(--surface2);border-radius:10px;padding:16px;margin-bottom:14px;}
+  .result-detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .result-detail-row:last-child{border-bottom:none;}
+  .answer-item{background:var(--surface2);border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;}
+  .answer-item.correct{border-left:3px solid var(--green);}
+  .answer-item.wrong{border-left:3px solid var(--red);}
+  .answer-item.skipped{border-left:3px solid var(--gold);}
+
+  /* REALTIME BADGE */
+  .rt-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid #00C85330;padding:4px 10px;border-radius:100px;font-size:11px;color:var(--green);font-family:'DM Mono',monospace;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.success{border-color:#00C85350;color:var(--green);}
+  .toast.error{border-color:#FF3B3050;color:var(--red);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login">
+  <div class="login-box">
+    <div class="login-logo">OT</div>
+    <div class="login-title">Admin <span style="color:var(--gold)">Portal</span></div>
+    <p class="login-sub">Ototech Solutions · Exam Management System</p>
+    <div class="login-field"><label>Admin Password</label><input type="password" id="admin-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
+    <button class="btn-login" onclick="adminLogin()">Sign In →</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <div class="sb-icon">OT</div>
+        <div><div class="sb-name">Oto<span>tech</span></div></div>
+      </div>
+      <div class="sb-tag">Admin Dashboard</div>
+    </div>
+    <div class="sb-nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" onclick="switchPanel('dashboard')"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="switchPanel('responses')">
+        <span class="ni">📋</span> Responses
+        <div class="live-dot"></div>
+      </div>
+      <div class="nav-section">Configuration</div>
+      <div class="nav-item" onclick="switchPanel('questions')"><span class="ni">❓</span> Questions</div>
+      <div class="nav-item" onclick="switchPanel('codes')"><span class="ni">🔑</span> Access Codes</div>
+    </div>
+    <div class="sb-footer">
+      <button class="btn-logout" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- DASHBOARD PANEL -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub">Real-time overview of exam activity</div>
+        </div>
+        <div class="rt-badge"><div class="live-dot"></div> LIVE</div>
+      </div>
+      <div style="padding:28px 32px 0;">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card"><div class="sc-label">Total Attempts</div><div class="sc-val" id="stat-total">—</div><div class="sc-sub">All time</div></div>
+          <div class="stat-card"><div class="sc-label">Avg Score</div><div class="sc-val" id="stat-avg" style="color:var(--gold)">—</div><div class="sc-sub">Percentage</div></div>
+          <div class="stat-card"><div class="sc-label">Pass Rate</div><div class="sc-val" id="stat-pass" style="color:var(--green)">—</div><div class="sc-sub">≥ 50%</div></div>
+          <div class="stat-card"><div class="sc-label">Questions</div><div class="sc-val" id="stat-questions" style="color:var(--blue)">—</div><div class="sc-sub">Active in bank</div></div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-head"><div class="table-head-title">Recent Submissions</div></div>
+          <table>
+            <thead><tr><th>Name</th><th>Score</th><th>Grade</th><th>Time</th><th>Date</th><th></th></tr></thead>
+            <tbody id="recent-tbody"><tr><td colspan="6" class="empty-state"><p>Loading…</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSES PANEL -->
+    <div class="panel" id="panel-responses">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Responses</div>
+          <div class="page-sub">Every exam submission — updates in real time</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-sm btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>
+          <button class="btn-sm btn-ghost" onclick="loadResponses()">↻ Refresh</button>
+        </div>
+      </div>
+      <div style="padding:28px 32px 0;">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div class="table-head-title">Submissions <span id="resp-count" style="color:var(--muted);font-weight:400;font-size:13px;"></span></div>
+            <input class="search-input" placeholder="Search name or email…" oninput="filterResponses(this.value)"/>
+          </div>
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Category</th><th>Organisation</th><th>Score</th><th>Grade</th><th>Date</th><th></th></tr></thead>
+            <tbody id="resp-tbody"><tr><td colspan="7" class="empty-state"><p>Loading…</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUESTIONS PANEL -->
+    <div class="panel" id="panel-questions">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Question Bank</div>
+          <div class="page-sub">Add, edit, or disable questions</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-sm btn-primary" onclick="openQuestionModal()">+ Add Question</button>
+        </div>
+      </div>
+      <div style="padding:28px 32px 0;">
+        <div class="table-wrap">
+          <div class="table-head">
+            <div class="table-head-title">Questions <span id="q-count" style="color:var(--muted);font-weight:400;font-size:13px;"></span></div>
+            <input class="search-input" placeholder="Search questions…" oninput="filterQuestions(this.value)"/>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>Question</th><th>Category</th><th>Status</th><th></th></tr></thead>
+            <tbody id="q-tbody"><tr><td colspan="5" class="empty-state"><p>Loading…</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCESS CODES PANEL -->
+    <div class="panel" id="panel-codes">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Access Codes</div>
+          <div class="page-sub">Manage who can enter the exam</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn-sm btn-primary" onclick="openCodeModal()">+ Add Code</button>
+        </div>
+      </div>
+      <div style="padding:28px 32px 0;">
+        <div class="table-wrap">
+          <div class="table-head"><div class="table-head-title">Active Codes</div></div>
+          <table>
+            <thead><tr><th>Code</th><th>Category</th><th>Label</th><th>Uses</th><th>Status</th><th></th></tr></thead>
+            <tbody id="codes-tbody"><tr><td colspan="6" class="empty-state"><p>Loading…</p></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- QUESTION MODAL -->
+<div class="modal-overlay" id="modal-question">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="qmodal-title">Add Question</div>
+      <button class="modal-close" onclick="closeModal('modal-question')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="qmodal-id"/>
+      <div class="field"><label>Question Text</label><textarea id="qmodal-text" rows="3" placeholder="Enter the question…"></textarea></div>
+      <div class="field"><label>Category</label>
+        <select id="qmodal-cat">
+          <option value="civil">📋 Civil Service Rules</option>
+          <option value="affairs">🌍 Current Affairs</option>
+          <option value="edu">🎓 Education</option>
+          <option value="ict">💻 ICT</option>
+          <option value="religion">🕌 Religion</option>
+          <option value="entrance">📝 Common Entrance</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Option A</label><input type="text" id="qmodal-a" placeholder="Option A"/></div>
+        <div class="field"><label>Option B</label><input type="text" id="qmodal-b" placeholder="Option B"/></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Option C</label><input type="text" id="qmodal-c" placeholder="Option C"/></div>
+        <div class="field"><label>Option D</label><input type="text" id="qmodal-d" placeholder="Option D"/></div>
+      </div>
+      <div class="field"><label>Correct Answer</label>
+        <div class="answer-opts">
+          <div class="answer-opt" onclick="selectAnswer(0)" id="ans-0">A — <span id="ans-0-text">Option A</span></div>
+          <div class="answer-opt" onclick="selectAnswer(1)" id="ans-1">B — <span id="ans-1-text">Option B</span></div>
+          <div class="answer-opt" onclick="selectAnswer(2)" id="ans-2">C — <span id="ans-2-text">Option C</span></div>
+          <div class="answer-opt" onclick="selectAnswer(3)" id="ans-3">D — <span id="ans-3-text">Option D</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeModal('modal-question')">Cancel</button>
+      <button class="btn-sm btn-primary" onclick="saveQuestion()">Save Question</button>
+    </div>
+  </div>
+</div>
+
+<!-- CODE MODAL -->
+<div class="modal-overlay" id="modal-code">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Access Code</div>
+      <button class="modal-close" onclick="closeModal('modal-code')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Access Code</label><input type="text" id="codemodal-code" placeholder="e.g. ICT2025B" style="text-transform:uppercase"/></div>
+      <div class="field"><label>Label / Description</label><input type="text" id="codemodal-label" placeholder="e.g. ICT Batch A"/></div>
+      <div class="field"><label>Category (Required) *</label>
+        <select id="codemodal-cat">
+          <option value="">— Select Category —</option>
+          <option value="civil">📋 Civil Service Rules</option>
+          <option value="affairs">🌍 Current Affairs</option>
+          <option value="edu">🎓 Education</option>
+          <option value="ict">💻 ICT</option>
+          <option value="religion">🕌 Religion</option>
+          <option value="entrance">📝 Common Entrance</option>
+        </select>
+      </div>
+      <div style="background:#FFB80010;border:1px solid #FFB80030;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);margin-top:4px;">
+        ⚠ Each code is tied to one category. A user with this code can <strong style="color:var(--text)">only</strong> access the selected category's exam.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeModal('modal-code')">Cancel</button>
+      <button class="btn-sm btn-primary" onclick="saveCode()">Add Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT DETAIL MODAL -->
+<div class="modal-overlay" id="modal-result">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="result-modal-title">Result Detail</div>
+      <button class="modal-close" onclick="closeModal('modal-result')">✕</button>
+    </div>
+    <div class="modal-body" id="result-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-ghost" onclick="closeModal('modal-result')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  CONFIGURATION — Must match index.html
+// ══════════════════════════════════════════════════
+const SUPABASE_URL = 'https://ihdwpjycghobodtxwyut.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MTaQq8iBEaR6DIDlLeb4JQ_T3GJtICU';
+const ADMIN_PASSWORD = 'omonide@1@2'; // Change this!
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+let sb = null;
+let allResponses = [];
+let allQuestions = [];
+let selectedAnswer = null;
+let editingQuestionId = null;
+let realtimeChannel = null;
+
+function adminLogin() {
+  const pw = document.getElementById('admin-pw').value;
+  if (pw === ADMIN_PASSWORD) {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('app').classList.add('show');
+    initAdmin();
+  } else {
+    document.getElementById('login-error').classList.add('show');
+    document.getElementById('admin-pw').value = '';
+  }
+}
+document.getElementById('admin-pw').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+
+function adminLogout() {
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('admin-login').style.display = 'flex';
+  document.getElementById('admin-pw').value = '';
+}
+
+async function initAdmin() {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  await Promise.all([loadDashboard(), loadResponses(), loadQuestions(), loadCodes()]);
+  setupRealtime();
+}
+
+// ══════════════════════════════════════════════════
+//  REALTIME
+// ══════════════════════════════════════════════════
+function setupRealtime() {
+  realtimeChannel = sb.channel('exam-realtime')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'exam_results' }, payload => {
+      allResponses.unshift(payload.new);
+      renderResponses(allResponses);
+      loadDashboard();
+      showToast(`New result: ${payload.new.name} scored ${payload.new.percentage}%`, 'success');
+    })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'exam_results' }, payload => {
+      allResponses = allResponses.filter(r => r.id !== payload.old.id);
+      renderResponses(allResponses);
+      loadDashboard();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'questions' }, payload => {
+      allQuestions.push(payload.new);
+      renderQuestions(allQuestions);
+      loadDashboard();
+      const catLabels={civil:'Civil Service',affairs:'Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance'};
+      showToast(`New question added to ${catLabels[payload.new.category]||payload.new.category}`, 'success');
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'questions' }, payload => {
+      const idx = allQuestions.findIndex(q => q.id === payload.new.id);
+      if (idx !== -1) allQuestions[idx] = payload.new;
+      renderQuestions(allQuestions);
+      loadDashboard();
+    })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'questions' }, payload => {
+      allQuestions = allQuestions.filter(q => q.id !== payload.old.id);
+      renderQuestions(allQuestions);
+      loadDashboard();
+    })
+    .subscribe();
+}
+
+// ══════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════
+async function loadDashboard() {
+  const { data } = await sb.from('exam_results').select('*').order('taken_at',{ascending:false});
+  if(!data) return;
+  const total = data.length;
+  const avg = total ? Math.round(data.reduce((s,r)=>s+r.percentage,0)/total) : 0;
+  const passed = data.filter(r=>r.percentage>=50).length;
+  const passRate = total ? Math.round((passed/total)*100) : 0;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-avg').textContent = avg+'%';
+  document.getElementById('stat-pass').textContent = passRate+'%';
+
+  const { count } = await sb.from('questions').select('*',{count:'exact',head:true}).eq('active',true);
+  document.getElementById('stat-questions').textContent = count||0;
+
+  const recent = data.slice(0,8);
+  const tbody = document.getElementById('recent-tbody');
+  if(!recent.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="es-icon">📭</div><p>No submissions yet</p></div></td></tr>';return;}
+  tbody.innerHTML = recent.map(r=>`
+    <tr>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td>${r.score}/${r.total}</td>
+      <td><span class="badge ${gradeBadge(r.percentage)}">${esc(r.grade)}</span></td>
+      <td>${formatTime(r.time_taken_secs)}</td>
+      <td style="color:var(--muted);font-size:12px;">${fmtDate(r.taken_at)}</td>
+      <td><button class="btn-sm btn-danger" style="padding:5px 10px;font-size:12px;" onclick="deleteResponse(${r.id}, 'dashboard')">🗑 Delete</button></td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  RESPONSES
+// ══════════════════════════════════════════════════
+async function loadResponses() {
+  const { data } = await sb.from('exam_results').select('*').order('taken_at',{ascending:false});
+  allResponses = data || [];
+  renderResponses(allResponses);
+}
+
+function renderResponses(rows) {
+  document.getElementById('resp-count').textContent = `(${rows.length})`;
+  const tbody = document.getElementById('resp-tbody');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="es-icon">📭</div><p>No submissions yet</p></div></td></tr>';return;}
+  tbody.innerHTML = rows.map(r=>`
+    <tr>
+      <td><strong>${esc(r.name)}</strong></td>
+      <td style="color:var(--muted);font-size:12px;">${esc(r.email||'')}</td>
+      <td><span class="badge badge-blue" style="font-size:11px;">${esc(r.selected_category||'—')}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${esc(r.organisation||'—')}</td>
+      <td>${r.score}/${r.total} <span style="color:var(--muted)">(${r.percentage}%)</span></td>
+      <td><span class="badge ${gradeBadge(r.percentage)}">${esc(r.grade)}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${fmtDate(r.taken_at)}</td>
+      <td><button class="btn-sm btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="viewResult(${r.id})">View</button>
+      <button class="btn-sm btn-danger" style="padding:5px 10px;font-size:12px;margin-left:4px;" onclick="deleteResponse(${r.id}, 'responses')">🗑</button></td>
+    </tr>`).join('');
+}
+
+function filterResponses(q) {
+  const f = q.toLowerCase();
+  renderResponses(allResponses.filter(r=>
+    (r.name||'').toLowerCase().includes(f)||(r.email||'').toLowerCase().includes(f)
+  ));
+}
+
+async function viewResult(id) {
+  const r = allResponses.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('result-modal-title').textContent = `${r.name} — ${r.percentage}%`;
+  const details = r.answers_detail || [];
+  document.getElementById('result-modal-body').innerHTML = `
+    <div class="result-detail">
+      <div class="result-detail-row"><span>Name</span><strong>${esc(r.name)}</strong></div>
+      <div class="result-detail-row"><span>Category</span><span>${esc(r.selected_category||'All')}</span></div>
+      <div class="result-detail-row"><span>Email</span><span>${esc(r.email||'—')}</span></div>
+      <div class="result-detail-row"><span>Organisation</span><span>${esc(r.organisation||'—')}</span></div>
+      <div class="result-detail-row"><span>Phone</span><span>${esc(r.phone||'—')}</span></div>
+      <div class="result-detail-row"><span>Score</span><strong>${r.score}/${r.total} (${r.percentage}%)</strong></div>
+      <div class="result-detail-row"><span>Grade</span><span class="badge ${gradeBadge(r.percentage)}">${esc(r.grade)}</span></div>
+      <div class="result-detail-row"><span>Civil Service</span><span>${r.civil_score}/20</span></div>
+      <div class="result-detail-row"><span>Current Affairs</span><span>${r.affairs_score}/10</span></div>
+      <div class="result-detail-row"><span>Education</span><span>${r.edu_score}/10</span></div>
+      <div class="result-detail-row"><span>ICT</span><span>${r.ict_score||0}/10</span></div>
+      <div class="result-detail-row"><span>Religion</span><span>${r.religion_score||0}/10</span></div>
+      <div class="result-detail-row"><span>Common Entrance</span><span>${r.entrance_score||0}/10</span></div>
+      <div class="result-detail-row"><span>Time Taken</span><span>${formatTime(r.time_taken_secs)}</span></div>
+      <div class="result-detail-row"><span>Submitted</span><span>${fmtDate(r.taken_at)}</span></div>
+    </div>
+    ${details.length ? `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:10px;">Answer Detail</div>
+    ${details.map((a,i)=>`
+      <div class="answer-item ${a.skipped?'skipped':a.is_correct?'correct':'wrong'}">
+        <div style="font-weight:600;margin-bottom:4px;">Q${i+1}: ${esc(a.question)}</div>
+        <div style="color:var(--green)">✓ Correct: ${esc(a.correct_answer)}</div>
+        ${!a.is_correct&&!a.skipped?`<div style="color:var(--red)">✗ Answered: ${esc(a.user_answer||'')}</div>`:''}
+        ${a.skipped?`<div style="color:var(--gold)">– Skipped</div>`:''}
+      </div>`).join('')}` : ''}
+  `;
+  openModal('modal-result');
+}
+
+function exportCSV() {
+  if(!allResponses.length){ showToast('No data to export','error'); return; }
+  const headers = ['Name','Email','Phone','Organisation','Score','Total','Percentage','Grade','Civil','Affairs','Education','Time(s)','Date'];
+  const rows = allResponses.map(r=>[
+    r.name,r.email||'',r.phone||'',r.organisation||'',
+    r.score,r.total,r.percentage,r.grade,
+    r.civil_score,r.affairs_score,r.edu_score,
+    r.time_taken_secs,r.taken_at
+  ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`));
+  const csv = [headers, ...rows].map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `ototech_results_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('CSV exported!', 'success');
+}
+
+async function deleteResponse(id, source) {
+  if (!confirm('Delete this submission permanently? This cannot be undone.')) return;
+  const { error } = await sb.from('exam_results').delete().eq('id', id);
+  if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+  allResponses = allResponses.filter(r => r.id !== id);
+  renderResponses(allResponses);
+  loadDashboard();
+  showToast('Submission deleted.', 'success');
+}
+
+
+async function loadQuestions() {
+  const { data } = await sb.from('questions').select('*').order('category').order('id');
+  allQuestions = data || [];
+  renderQuestions(allQuestions);
+}
+
+function renderQuestions(rows) {
+  document.getElementById('q-count').textContent = `(${rows.length})`;
+  const tbody = document.getElementById('q-tbody');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="es-icon">📝</div><p>No questions yet</p></div></td></tr>';return;}
+  const catLabels={civil:'📋 Civil Service',affairs:'🌍 Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Entrance'};
+  tbody.innerHTML = rows.map((q,i)=>`
+    <tr>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;">${q.id}</td>
+      <td style="max-width:320px;">${esc(q.question.slice(0,90))}${q.question.length>90?'…':''}</td>
+      <td><span class="badge ${q.category==='civil'?'badge-green':q.category==='affairs'?'badge-gold':q.category==='edu'?'badge-blue':q.category==='ict'?'badge-blue':q.category==='religion'?'badge-gold':'badge-green'}">${catLabels[q.category]||q.category}</span></td>
+      <td><span class="badge ${q.active?'badge-green':'badge-red'}">${q.active?'Active':'Disabled'}</span></td>
+      <td>
+        <button class="btn-sm btn-ghost" style="padding:5px 10px;font-size:12px;margin-right:4px;" onclick="editQuestion(${q.id})">Edit</button>
+        <button class="btn-sm ${q.active?'btn-danger':'btn-ghost'}" style="padding:5px 10px;font-size:12px;" onclick="toggleQuestion(${q.id},${q.active})">${q.active?'Disable':'Enable'}</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterQuestions(q) {
+  const f = q.toLowerCase();
+  renderQuestions(allQuestions.filter(r=>r.question.toLowerCase().includes(f)));
+}
+
+function openQuestionModal(prefill=null) {
+  editingQuestionId = prefill ? prefill.id : null;
+  document.getElementById('qmodal-title').textContent = prefill ? 'Edit Question' : 'Add Question';
+  document.getElementById('qmodal-id').value = '';
+  document.getElementById('qmodal-text').value = prefill ? prefill.question : '';
+  document.getElementById('qmodal-cat').value = prefill ? prefill.category : 'civil';
+  document.getElementById('qmodal-a').value = prefill ? prefill.option_a : '';
+  document.getElementById('qmodal-b').value = prefill ? prefill.option_b : '';
+  document.getElementById('qmodal-c').value = prefill ? prefill.option_c : '';
+  document.getElementById('qmodal-d').value = prefill ? prefill.option_d : '';
+  selectedAnswer = prefill ? prefill.correct_answer : null;
+  updateAnswerUI();
+  openModal('modal-question');
+}
+
+function editQuestion(id) {
+  const q = allQuestions.find(x=>x.id===id);
+  if(q) openQuestionModal(q);
+}
+
+function selectAnswer(idx) {
+  selectedAnswer = idx;
+  updateAnswerUI();
+  document.getElementById('ans-0-text').textContent = document.getElementById('qmodal-a').value||'Option A';
+  document.getElementById('ans-1-text').textContent = document.getElementById('qmodal-b').value||'Option B';
+  document.getElementById('ans-2-text').textContent = document.getElementById('qmodal-c').value||'Option C';
+  document.getElementById('ans-3-text').textContent = document.getElementById('qmodal-d').value||'Option D';
+}
+
+function updateAnswerUI() {
+  [0,1,2,3].forEach(i=>{
+    document.getElementById('ans-'+i).classList.toggle('selected', i===selectedAnswer);
+  });
+}
+
+async function saveQuestion() {
+  const text = document.getElementById('qmodal-text').value.trim();
+  const cat = document.getElementById('qmodal-cat').value;
+  const a = document.getElementById('qmodal-a').value.trim();
+  const b = document.getElementById('qmodal-b').value.trim();
+  const c = document.getElementById('qmodal-c').value.trim();
+  const d = document.getElementById('qmodal-d').value.trim();
+  if(!text||!a||!b||!c||!d){ showToast('Please fill all fields','error'); return; }
+  if(selectedAnswer===null){ showToast('Please select the correct answer','error'); return; }
+
+  const payload = { question:text, category:cat, option_a:a, option_b:b, option_c:c, option_d:d, correct_answer:selectedAnswer, active:true };
+  let error;
+  if(editingQuestionId) {
+    ({error} = await sb.from('questions').update(payload).eq('id',editingQuestionId));
+  } else {
+    ({error} = await sb.from('questions').insert(payload));
+  }
+  if(error){ showToast('Save failed: '+error.message,'error'); return; }
+  showToast(editingQuestionId?'Question updated!':'Question added!','success');
+  closeModal('modal-question');
+  loadQuestions();
+}
+
+async function toggleQuestion(id, current) {
+  const { error } = await sb.from('questions').update({active:!current}).eq('id',id);
+  if(error){ showToast('Update failed','error'); return; }
+  showToast(`Question ${!current?'enabled':'disabled'}`, 'success');
+  loadQuestions();
+}
+
+// ══════════════════════════════════════════════════
+//  ACCESS CODES
+// ══════════════════════════════════════════════════
+async function loadCodes() {
+  const { data } = await sb.from('access_codes').select('*').order('category').order('created_at',{ascending:false});
+  const tbody = document.getElementById('codes-tbody');
+  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="es-icon">🔑</div><p>No access codes yet</p></div></td></tr>';return;}
+  const catLabels = {
+    civil:'📋 Civil Service', affairs:'🌍 Current Affairs', edu:'🎓 Education',
+    ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance'
+  };
+  const catBadge = {
+    civil:'badge-green', affairs:'badge-gold', edu:'badge-blue',
+    ict:'badge-blue', religion:'badge-gold', entrance:'badge-green'
+  };
+  tbody.innerHTML = data.map(c=>`
+    <tr>
+      <td><strong style="font-family:'DM Mono',monospace;color:var(--gold)">${esc(c.code)}</strong></td>
+      <td><span class="badge ${catBadge[c.category]||'badge-blue'}" style="font-size:11px;">${catLabels[c.category]||esc(c.category||'—')}</span></td>
+      <td style="color:var(--muted);font-size:13px;">${esc(c.label||'—')}</td>
+      <td style="color:var(--muted)">${c.use_count||0}</td>
+      <td><span class="badge ${c.active?'badge-green':'badge-red'}">${c.active?'Active':'Inactive'}</span></td>
+      <td><button class="btn-sm ${c.active?'btn-danger':'btn-ghost'}" style="padding:5px 10px;font-size:12px;" onclick="toggleCode(${c.id},${c.active})">${c.active?'Deactivate':'Activate'}</button></td>
+    </tr>`).join('');
+}
+
+function openCodeModal() {
+  document.getElementById('codemodal-code').value = '';
+  document.getElementById('codemodal-label').value = '';
+  document.getElementById('codemodal-cat').value = '';
+  openModal('modal-code');
+}
+
+async function saveCode() {
+  const code = document.getElementById('codemodal-code').value.trim().toUpperCase();
+  const label = document.getElementById('codemodal-label').value.trim();
+  const category = document.getElementById('codemodal-cat').value;
+  if(!code){ showToast('Enter a code','error'); return; }
+  if(!category){ showToast('Please select a category for this code','error'); return; }
+  const { error } = await sb.from('access_codes').insert({code, label, category, active:true, use_count:0});
+  if(error){ showToast('Save failed: '+error.message,'error'); return; }
+  showToast('Access code added!','success');
+  closeModal('modal-code');
+  loadCodes();
+}
+
+async function toggleCode(id, current) {
+  const { error } = await sb.from('access_codes').update({active:!current}).eq('id',id);
+  if(error){ showToast('Update failed','error'); return; }
+  showToast(`Code ${!current?'activated':'deactivated'}`, 'success');
+  loadCodes();
+}
+
+// ══════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function gradeBadge(pct){ return pct>=65?'badge-green':pct>=50?'badge-gold':'badge-red'; }
+function formatTime(s){ if(!s) return '—'; const m=Math.floor(s/60); return `${m}m ${s%60}s`; }
+function fmtDate(d){ if(!d) return '—'; return new Date(d).toLocaleString('en-NG',{dateStyle:'medium',timeStyle:'short'}); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
