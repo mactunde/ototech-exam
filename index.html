@@ -967,8 +967,8 @@ async function submitRegistration() {
     affairs: { label:'Current Affairs',       emoji:'🌍', color:'var(--affairs)', count:50 },
     edu:     { label:'Education',             emoji:'🎓', color:'var(--edu)',      count:50 },
     ict:     { label:'ICT',                   emoji:'💻', color:'var(--ict)',      count:50 },
-    religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', count:${count},
-    entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', count:${count} },
+    religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', &{count} },
+    entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', &{count} },
   };
   const cm = catMeta[selectedCategory];
   const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
