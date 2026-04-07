@@ -340,12 +340,12 @@
     <div class="meta-card"><div class="num c-blue">6</div><div class="lbl">Categories</div></div>
   </div>
   <div class="cat-tags" id="welcome-cat-tags">
-    <div class="tag civil">📋 Civil Service Rules — 50 Qs</div>
-    <div class="tag affairs">🌍 Current Affairs — 50 Qs</div>
-    <div class="tag edu">🎓 Education — 50 Qs</div>
-    <div class="tag ict">💻 ICT — 50 Qs</div>
-    <div class="tag religion">🕌 Religion — 50 Qs</div>
-    <div class="tag entrance">📝 Common Entrance — 50 Qs</div>
+    <div class="tag civil">📋 Civil Service Rules</div>
+    <div class="tag affairs">🌍 Current Affairs</div>
+    <div class="tag edu">🎓 Education</div>
+    <div class="tag ict">💻 ICT</div>
+    <div class="tag religion">🕌 Religion</div>
+    <div class="tag entrance">📝 Common Entrance </div>
   </div>
   <button class="btn-full" onclick="startExam()">Begin Examination →</button>
 </div>
@@ -967,8 +967,8 @@ async function submitRegistration() {
     affairs: { label:'Current Affairs',       emoji:'🌍', color:'var(--affairs)', count:50 },
     edu:     { label:'Education',             emoji:'🎓', color:'var(--edu)',      count:50 },
     ict:     { label:'ICT',                   emoji:'💻', color:'var(--ict)',      count:50 },
-    religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', count:50 },
-    entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', count:50 },
+    religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', count:${count},
+    entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', count:${count} },
   };
   const cm = catMeta[selectedCategory];
   const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
