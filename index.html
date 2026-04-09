@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ototech System Solutions — ONLINE QUESTIONS MANAGEMENT SYSTEM</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   ROOT VARIABLES — Education Green Theme
+══════════════════════════════════════════ */
+:root {
+  /* ══ OSS LOGO PALETTE ══
+     Teal    : #00897B  (the O letterform)
+     Orange  : #E8511A  (the S + upward arrow)
+     Navy    : #1C3A5E  (OTOTECH SYSTEM SOLUTIONS text)
+  ══════════════════════════════════════ */
+
+  /* PRIMARY — Teal (O) */
+  --green:       #00897B;
+  --green-light: #26A69A;
+  --green-pale:  #E0F2F1;
+  --green-mid:   #80CBC4;
+  --green-dark:  #00695C;
+  --green-strip: #F0FAFA;
+
+  /* ACCENT — Orange (S + arrow) */
+  --amber:       #E8511A;
+  --amber-light: #FF7043;
+  --amber-pale:  #FBE9E7;
+
+  /* NAVY (OTOTECH text) */
+  --navy:        #1C3A5E;
+  --navy-light:  #2A5082;
+  --navy-pale:   #E8EEF5;
+
+  /* STATUS */
+  --red:         #C62828;
+  --red-pale:    #FFEBEE;
+  --blue:        #1565C0;
+  --blue-pale:   #E3F2FD;
+  --purple:      #6A1B9A;
+  --purple-pale: #F3E5F5;
+  --teal:        #00695C;
+  --teal-pale:   #E0F2F1;
+  --pink:        #AD1457;
+  --pink-pale:   #FCE4EC;
+
+  /* NEUTRALS */
+  --bg:          #F4F7F9;
+  --white:       #FFFFFF;
+  --border:      #D0DDE8;
+  --border2:     #B8CDD8;
+  --text:        #0F2236;
+  --muted:       #4A6070;
+  --muted2:      #8AA0B0;
+
+  --shadow-sm:   0 2px 8px rgba(0,137,123,.10);
+  --shadow-md:   0 6px 24px rgba(0,137,123,.16);
+  --shadow-lg:   0 12px 48px rgba(0,137,123,.22);
+  --r:           14px;
+  --r-sm:        8px;
+}
+
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ══════════════════════════════════════════
+   TOPBAR  (matches green info bar in screenshot)
+══════════════════════════════════════════ */
+.topbar {
+  width: 100%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 32px;
+  letter-spacing: .02em;
+}
+.topbar a { color:#80CBC4; text-decoration:none; }
+.topbar-right { display:flex; gap:20px; align-items:center; }
+
+/* ══════════════════════════════════════════
+   NAVBAR  (matches white nav in screenshot)
+══════════════════════════════════════════ */
+.navbar {
+  width: 100%;
+  background: var(--white);
+  border-bottom: 2px solid var(--green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-brand-icon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  display: flex; align-items:center; justify-content:center;
+  font-family:'Poppins',sans-serif; font-weight:800; font-size:13px; color:#fff;
+  box-shadow: 0 4px 14px rgba(0,137,123,.3);
+}
+.nav-brand-text strong {
+  font-family:'Poppins',sans-serif;
+  font-weight:800; font-size:16px; color:var(--navy);
+  display:block; line-height:1.1;
+}
+.nav-brand-text span {
+  font-size:10px; color:var(--muted2);
+  font-family:'JetBrains Mono',monospace; letter-spacing:.04em; text-transform:uppercase;
+}
+.nav-status {
+  display: flex; align-items:center; gap:8px;
+  background: var(--green-pale);
+  border: 1.5px solid var(--green-mid);
+  padding: 7px 16px; border-radius: 100px;
+  font-size:12px; color:var(--green-dark);
+  font-family:'JetBrains Mono',monospace; font-weight:600; letter-spacing:.02em;
+}
+.nav-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
+
+/* ══════════════════════════════════════════
+   HERO BANNER  (matches big image hero)
+══════════════════════════════════════════ */
+.hero-section {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  display: flex;
+  align-items: flex-end;
+  background: linear-gradient(135deg, #1C3A5E 0%, #00897B 45%, #26A69A 75%, #00695C 100%);
+}
+.hero-bg-pattern {
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(165,214,167,.15) 0%, transparent 35%),
+    radial-gradient(circle at 60% 80%, rgba(255,255,255,.05) 0%, transparent 30%);
+  /* Decorative grid lines like reference site */
+  background-size: cover;
+}
+.hero-decorative {
+  position:absolute;
+  right:0; top:0; bottom:0;
+  width:45%;
+  display:flex; align-items:center; justify-content:center;
+  gap:8px; padding:24px;
+  flex-wrap:wrap; align-content:center;
+}
+.hero-deco-card {
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;
+  width:90px; height:72px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:4px;
+  backdrop-filter:blur(4px);
+  transition:transform .3s;
+}
+.hero-deco-card:hover { transform:translateY(-4px); }
+.hero-deco-card .dc-icon { font-size:22px; }
+.hero-deco-card .dc-label { font-size:9px; color:rgba(255,255,255,.8); font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+.hero-content {
+  position:relative; z-index:2;
+  padding: 52px 40px 44px;
+  max-width: 55%;
+}
+.hero-eyebrow {
+  font-family:'Poppins',sans-serif; font-weight:600;
+  font-size:13px; color:#FFB89A; letter-spacing:.08em;
+  text-transform:uppercase; margin-bottom:12px;
+}
+.hero-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:clamp(24px,4vw,40px); line-height:1.15;
+  color:#fff; margin-bottom:14px; letter-spacing:-.01em;
+}
+.hero-title span { color:#FF8A65; }
+.hero-desc {
+  font-size:14px; color:rgba(255,255,255,.8);
+  line-height:1.7; max-width:400px;
+}
+
+/* ══════════════════════════════════════════
+   FEATURE STRIP  (icon row below hero)
+══════════════════════════════════════════ */
+.feature-strip {
+  width: 100%;
+  background: var(--green-strip);
+  border-top: 3px solid var(--green-pale);
+  border-bottom: 3px solid var(--green-pale);
+}
+.feature-strip-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.feature-item {
+  padding: 28px 20px 22px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  transition: background .2s;
+}
+.feature-item:last-child { border-right: none; }
+.feature-item:hover { background:#E8F5E9; }
+.feature-icon-wrap {
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  display: flex; align-items:center; justify-content:center;
+  font-size: 26px; margin: 0 auto 14px;
+  box-shadow: 0 6px 20px rgba(0,137,123,.25);
+}
+.feature-title {
+  font-family:'Poppins',sans-serif; font-weight:700;
+  font-size:13px; color:var(--green-dark); margin-bottom:6px;
+}
+.feature-desc { font-size:12px; color:var(--muted); line-height:1.55; }
+
+/* ══════════════════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════════════════ */
+.main-content {
+  width:100%; max-width:900px;
+  padding: 40px 24px 60px;
+  display:flex; flex-direction:column; align-items:center;
+}
+
+/* ══════════════════════════════════════════
+   SCREENS  (all app screens)
+══════════════════════════════════════════ */
+.screen { display:none; width:100%; animation:fadeUp .4s cubic-bezier(.22,.8,.25,1); }
+.screen.active { display:block; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════
+   SECTION HEADER  (reusable heading block)
+══════════════════════════════════════════ */
+.section-header {
+  text-align:center; margin-bottom:32px;
+}
+.section-eyebrow {
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  color:var(--amber); letter-spacing:.1em; text-transform:uppercase;
+  margin-bottom:10px;
+  background:var(--amber-pale); padding:5px 14px; border-radius:100px;
+  border:1px solid rgba(245,124,0,.25);
+}
+.section-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:clamp(22px,4vw,32px); color:var(--text);
+  letter-spacing:-.01em; line-height:1.2;
+}
+.section-title span { color:var(--green); }
+.section-sub { font-size:14px; color:var(--muted); line-height:1.7; margin-top:10px; }
+
+/* ══════════════════════════════════════════
+   CARD BASE
+══════════════════════════════════════════ */
+.card {
+  background:var(--white);
+  border:2px solid var(--border);
+  border-radius:var(--r);
+  padding:28px;
+  box-shadow:var(--shadow-sm);
+  width:100%;
+}
+
+/* ══════════════════════════════════════════
+   LOCK SCREEN
+══════════════════════════════════════════ */
+#screen-lock {
+  max-width: 540px;
+  margin: 0 auto;
+  width:100%;
+}
+.lock-layout {
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items:start;
+}
+@media(max-width:600px){ .lock-layout{ grid-template-columns:1fr; } }
+
+.lock-left {
+  background:linear-gradient(145deg, var(--navy), #0F2236);
+  border-radius:var(--r);
+  padding:32px 24px;
+  color:#fff;
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; gap:16px;
+  box-shadow:var(--shadow-md);
+}
+.lock-icon {
+  width:76px; height:76px; border-radius:20px;
+  background:rgba(255,255,255,.15);
+  border:2px solid rgba(255,255,255,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:34px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+.lock-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:22px; letter-spacing:-.01em; line-height:1.25;
+}
+.lock-title span { color:#FFD54F; }
+.lock-sub {
+  font-size:13px; color:rgba(255,255,255,.8);
+  line-height:1.65;
+}
+.lock-features { display:flex; flex-direction:column; gap:10px; width:100%; }
+.lock-feat {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px; padding:10px 14px;
+  font-size:12px; font-weight:700;
+  text-align:left;
+}
+.lock-feat-icon { font-size:18px; flex-shrink:0; }
+
+.lock-right {
+  background:var(--white);
+  border:2px solid var(--border);
+  border-radius:var(--r);
+  padding:28px 24px;
+  box-shadow:var(--shadow-sm);
+}
+.lock-form-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:18px; color:var(--text); margin-bottom:6px;
+}
+.lock-form-sub { font-size:13px; color:var(--muted); margin-bottom:22px; line-height:1.5; }
+.code-label {
+  font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--muted); margin-bottom:8px;
+  font-family:'JetBrains Mono',monospace; font-weight:600;
+}
+.code-input-row { display:flex; gap:8px; }
+.code-input {
+  flex:1; background:var(--bg); border:2px solid var(--border2);
+  border-radius:var(--r-sm); padding:13px 16px;
+  font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700;
+  color:var(--text); letter-spacing:.15em; outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  -webkit-text-security:disc; text-security:disc;
+}
+.code-input::placeholder {
+  color:var(--muted2); letter-spacing:.04em; font-size:13px;
+  -webkit-text-security:none; text-security:none; font-weight:400;
+}
+.code-input:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(0,137,123,.15); }
+.code-input.error { border-color:var(--red); box-shadow:0 0 0 3px rgba(198,40,40,.12); animation:shake .38s ease; }
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+.btn-gold {
+  padding:13px 18px;
+  background:linear-gradient(135deg, var(--green), var(--green-light));
+  color:#fff; border:none; border-radius:var(--r-sm);
+  font-family:'Poppins',sans-serif; font-weight:700; font-size:14px;
+  cursor:pointer; transition:all .22s; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,137,123,.3);
+}
+.btn-gold:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.lock-error { margin-top:12px; font-size:13px; color:var(--red); display:none; align-items:center; gap:6px; font-weight:700; }
+.lock-error.show { display:flex; }
+.attempts-left { margin-top:8px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.lockout-msg {
+  margin-top:16px; background:var(--red-pale); border:1.5px solid #EF9A9A;
+  border-radius:var(--r-sm); padding:14px 16px;
+  font-size:13px; color:var(--red); display:none; line-height:1.65; font-weight:600;
+}
+.lockout-msg.show { display:block; }
+.lock-access-hint {
+  margin-top:12px; padding:10px 14px; border-radius:var(--r-sm);
+  background:#E8F5E9; border:1.5px solid #A5D6A7;
+  font-size:12px; color:var(--green-dark); font-family:'JetBrains Mono',monospace;
+  text-align:center; font-weight:600;
+}
+.lock-footer {
+  margin-top:20px; font-size:11px; color:var(--muted2);
+  text-align:center; line-height:1.9; font-family:'JetBrains Mono',monospace;
+}
+.lock-footer strong { color:var(--green); }
+
+/* ══════════════════════════════════════════
+   REGISTRATION SCREEN  (two-col like site)
+══════════════════════════════════════════ */
+#screen-register { max-width:700px; margin:0 auto; width:100%; }
+.reg-layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media(max-width:640px){ .reg-layout{ grid-template-columns:1fr; } }
+
+.reg-panel {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:24px; box-shadow:var(--shadow-sm);
+}
+.reg-panel-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:15px; color:var(--text); margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+.reg-panel-title .rpt-icon {
+  width:30px; height:30px; border-radius:8px;
+  background:var(--green-pale); display:flex; align-items:center; justify-content:center;
+  font-size:16px;
+}
+.welcome-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--green-pale); border:1.5px solid var(--green-mid);
+  padding:6px 14px; border-radius:100px;
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green-dark);
+  margin-bottom:20px; letter-spacing:.05em; font-weight:600;
+}
+.dot { width:7px; height:7px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+.reg-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:26px; margin-bottom:6px; color:var(--text);
+}
+.reg-title .c-gold { color:var(--amber); }
+.reg-sub { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
+
+.field { margin-bottom:14px; }
+.field label {
+  display:block; font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--muted); font-family:'JetBrains Mono',monospace; margin-bottom:6px; font-weight:600;
+}
+.field input, .field select {
+  width:100%; background:var(--bg); border:2px solid var(--border2);
+  border-radius:var(--r-sm); padding:12px 14px;
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:600; color:var(--text);
+  outline:none; transition:border-color .2s, box-shadow .2s;
+}
+.field input:focus, .field select:focus {
+  border-color:var(--green); box-shadow:0 0 0 3px rgba(0,137,123,.12);
+}
+.field input::placeholder { color:var(--muted2); }
+.field select option { background:var(--white); }
+
+/* Category full-width below both panels */
+.cat-full { margin-top:20px; }
+.cat-section-title {
+  font-family:'Poppins',sans-serif; font-weight:800;
+  font-size:14px; color:var(--text);
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:14px;
+}
+.cat-section-title::after { content:''; flex:1; height:2px; background:var(--border); }
+.cat-lock-banner {
+  background:var(--amber-pale); border:1.5px solid rgba(245,124,0,.35);
+  border-radius:var(--r-sm); padding:10px 14px; font-size:12px; color:var(--amber);
+  margin-bottom:14px; font-family:'JetBrains Mono',monospace; font-weight:600;
+}
+.cat-select-grid {
+  display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:4px;
+}
+@media(max-width:640px){ .cat-select-grid{ grid-template-columns:repeat(3,1fr); } }
+@media(max-width:400px){ .cat-select-grid{ grid-template-columns:repeat(2,1fr); } }
+
+.cat-select-card {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:16px 10px; text-align:center;
+  cursor:pointer; transition:all .22s; position:relative;
+  box-shadow:var(--shadow-sm);
+}
+.cat-select-card:hover { border-color:var(--green-mid); transform:translateY(-3px); box-shadow:var(--shadow-md); }
+.cat-select-card.selected { border-color:var(--green); transform:translateY(-2px); background:var(--green-pale); box-shadow:var(--shadow-md); }
+.cat-select-card.selected::after {
+  content:'✓'; position:absolute; top:8px; right:10px;
+  font-size:10px; font-weight:800; color:#fff;
+  background:var(--green); border-radius:100px;
+  width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Per-category colours */
+.cat-select-card[data-cat="civil"].selected{border-color:#00897B;background:#E8F5E9;}
+.cat-select-card[data-cat="civil"].selected .csc-name{color:#00897B;}
+.cat-select-card[data-cat="civil"].selected::after{background:#00897B;}
+.cat-select-card[data-cat="affairs"].selected{border-color:#F57C00;background:#FFF3E0;}
+.cat-select-card[data-cat="affairs"].selected .csc-name{color:#F57C00;}
+.cat-select-card[data-cat="affairs"].selected::after{background:#F57C00;}
+.cat-select-card[data-cat="edu"].selected{border-color:#1565C0;background:#E3F2FD;}
+.cat-select-card[data-cat="edu"].selected .csc-name{color:#1565C0;}
+.cat-select-card[data-cat="edu"].selected::after{background:#1565C0;}
+.cat-select-card[data-cat="ict"].selected{border-color:#6A1B9A;background:#F3E5F5;}
+.cat-select-card[data-cat="ict"].selected .csc-name{color:#6A1B9A;}
+.cat-select-card[data-cat="ict"].selected::after{background:#6A1B9A;}
+.cat-select-card[data-cat="religion"].selected{border-color:#00695C;background:#E0F2F1;}
+.cat-select-card[data-cat="religion"].selected .csc-name{color:#00695C;}
+.cat-select-card[data-cat="religion"].selected::after{background:#00695C;}
+.cat-select-card[data-cat="entrance"].selected{border-color:#AD1457;background:#FCE4EC;}
+.cat-select-card[data-cat="entrance"].selected .csc-name{color:#AD1457;}
+.cat-select-card[data-cat="entrance"].selected::after{background:#AD1457;}
+
+.csc-icon { font-size:26px; margin-bottom:8px; display:block; }
+.csc-name { font-family:'Poppins',sans-serif; font-weight:700; font-size:11px; line-height:1.3; margin-bottom:4px; color:var(--text); }
+.csc-count { font-size:9px; color:var(--muted2); font-family:'JetBrains Mono',monospace; font-weight:600; }
+.cat-select-error { color:var(--red); font-size:12px; margin-top:10px; display:none; font-weight:700; }
+.cat-select-error.show { display:block; }
+
+.cat-select-card[style*="pointer-events: none"]:not(.selected):hover {
+  border-color:var(--border) !important; background:var(--white) !important;
+  transform:none !important; box-shadow:var(--shadow-sm) !important;
+}
+
+.btn-full {
+  width:100%; padding:15px;
+  background:linear-gradient(135deg, var(--green), var(--green-light));
+  color:#fff; border:none; border-radius:var(--r);
+  font-family:'Poppins',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; transition:all .22s; margin-top:20px;
+  box-shadow:0 6px 20px rgba(0,137,123,.28); letter-spacing:.01em;
+}
+.btn-full:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+
+/* ══════════════════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════════════════ */
+#screen-welcome { max-width:700px; margin:0 auto; width:100%; }
+
+.welcome-hero {
+  background:linear-gradient(135deg, var(--navy), var(--green));
+  border-radius:var(--r); padding:36px 32px 30px;
+  color:#fff; margin-bottom:24px;
+  box-shadow:var(--shadow-md); position:relative; overflow:hidden;
+}
+.welcome-hero::before {
+  content:'🎓';
+  position:absolute; right:24px; top:50%; transform:translateY(-50%);
+  font-size:80px; opacity:.12;
+}
+h1 {
+  font-family:'Poppins',sans-serif; font-weight:900;
+  font-size:clamp(26px,5vw,40px); line-height:1.1;
+  letter-spacing:-.02em; margin-bottom:12px; color:#fff;
+}
+.c-gold { color:#FFD54F; } .c-green { color:#A5D6A7; } .c-blue { color:#81D4FA; }
+.subtitle {
+  font-size:14px; color:rgba(255,255,255,.82);
+  line-height:1.7; max-width:480px; margin-bottom:0;
+}
+
+.participant-card {
+  display:flex; align-items:center; gap:14px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px; padding:14px 18px; margin-top:20px;
+}
+.participant-card .av {
+  width:42px; height:42px; border-radius:12px;
+  background:rgba(255,255,255,.25);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Poppins',sans-serif; font-weight:900; font-size:17px; color:#fff;
+  flex-shrink:0;
+}
+.participant-card strong { font-size:14px; font-weight:800; }
+.participant-card span { font-size:12px; color:rgba(255,255,255,.7); }
+
+/* Stats row below hero */
+.stats-strip {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px;
+}
+.meta-card {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:20px 16px; text-align:center;
+  box-shadow:var(--shadow-sm); transition:all .2s;
+}
+.meta-card:hover { transform:translateY(-3px); border-color:var(--green-mid); box-shadow:var(--shadow-md); }
+.meta-card .num {
+  font-family:'Poppins',sans-serif; font-size:30px; font-weight:900; line-height:1;
+}
+.meta-card .lbl {
+  font-size:10px; color:var(--muted); margin-top:6px;
+  text-transform:uppercase; letter-spacing:.08em;
+  font-family:'JetBrains Mono',monospace; font-weight:600;
+}
+
+.cat-tags { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+.tag {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:100px; font-size:12px; font-weight:700;
+  border:1.5px solid; transition:transform .2s;
+  font-family:'Poppins',sans-serif;
+}
+.tag:hover { transform:translateY(-2px); }
+.tag.civil   { color:#00897B; border-color:rgba(0,137,123,.4); background:#E8F5E9; }
+.tag.affairs { color:#F57C00; border-color:rgba(245,124,0,.4); background:#FFF3E0; }
+.tag.edu     { color:#1565C0; border-color:rgba(21,101,192,.4); background:#E3F2FD; }
+.tag.ict     { color:#6A1B9A; border-color:rgba(106,27,154,.4); background:#F3E5F5; }
+.tag.religion{ color:#00695C; border-color:rgba(0,105,92,.4); background:#E0F2F1; }
+.tag.entrance{ color:#AD1457; border-color:rgba(173,20,87,.4); background:#FCE4EC; }
+
+/* ══════════════════════════════════════════
+   QUIZ SCREEN
+══════════════════════════════════════════ */
+#screen-quiz { max-width:700px; margin:0 auto; width:100%; }
+
+.quiz-header {
+  display:grid; grid-template-columns:auto 1fr auto;
+  align-items:center; gap:14px; margin-bottom:18px;
+}
+.q-counter {
+  font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600;
+  color:var(--muted); background:var(--white); border:2px solid var(--border);
+  padding:8px 16px; border-radius:100px; box-shadow:var(--shadow-sm); white-space:nowrap;
+}
+.q-counter span { color:var(--green-dark); font-weight:700; }
+.category-pill {
+  text-align:center; padding:6px 14px; border-radius:100px;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+  font-family:'JetBrains Mono',monospace; border:1.5px solid;
+}
+.category-pill.civil   { background:#E8F5E9; color:#00897B; border-color:rgba(0,137,123,.4); }
+.category-pill.affairs { background:#FFF3E0; color:#F57C00; border-color:rgba(245,124,0,.4); }
+.category-pill.edu     { background:#E3F2FD; color:#1565C0; border-color:rgba(21,101,192,.4); }
+.category-pill.ict     { background:#F3E5F5; color:#6A1B9A; border-color:rgba(106,27,154,.4); }
+.category-pill.religion{ background:#E0F2F1; color:#00695C; border-color:rgba(0,105,92,.4); }
+.category-pill.entrance{ background:#FCE4EC; color:#AD1457; border-color:rgba(173,20,87,.4); }
+
+.global-timer {
+  text-align:center; background:var(--white); border:2px solid var(--border2);
+  border-radius:var(--r-sm); padding:8px 16px; min-width:92px;
+  transition:all .3s; box-shadow:var(--shadow-sm);
+}
+.global-timer #timer-display {
+  font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;
+  color:var(--text); letter-spacing:.05em; display:block; transition:color .3s;
+}
+.global-timer .timer-label { font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted2); margin-top:1px; }
+.global-timer.warn  { border-color:rgba(245,124,0,.6); background:#FFFDE7; }
+.global-timer.warn #timer-display { color:#F57C00; }
+.global-timer.danger{ border-color:rgba(198,40,40,.6); background:var(--red-pale); }
+.global-timer.danger #timer-display { color:var(--red); animation:timerPulse 1s infinite; }
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.progress-bar-wrap {
+  height:10px; background:var(--border); border-radius:10px;
+  margin-bottom:26px; overflow:hidden; border:1px solid var(--border2);
+}
+.progress-bar {
+  height:100%;
+  background:linear-gradient(90deg, var(--green), var(--green-light));
+  border-radius:10px; transition:width .4s cubic-bezier(.25,.8,.25,1);
+}
+
+/* Question card */
+.question-card {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:28px; margin-bottom:18px;
+  box-shadow:var(--shadow-sm);
+}
+.question-text {
+  font-family:'Poppins',sans-serif; font-weight:700;
+  font-size:clamp(15px,2.8vw,19px); line-height:1.55; color:var(--text);
+  margin-bottom:0;
+}
+
+.options { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+.opt {
+  display:flex; align-items:center; gap:14px;
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:14px 18px;
+  cursor:pointer; transition:all .2s; font-size:14px; font-weight:600;
+  box-shadow:var(--shadow-sm); color:var(--text);
+}
+.opt:hover:not(.disabled) {
+  border-color:var(--green); background:var(--green-pale); box-shadow:var(--shadow-md);
+}
+.opt.disabled { cursor:default; }
+.opt.selected {
+  border-color:var(--green); background:var(--green-pale);
+  box-shadow:0 4px 18px rgba(0,137,123,.18);
+}
+.opt-letter {
+  width:34px; height:34px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg); border:2px solid var(--border2);
+  font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+  color:var(--muted); transition:all .2s;
+}
+.opt.selected .opt-letter {
+  background:var(--green); color:#fff; border-color:var(--green);
+  box-shadow:0 4px 12px rgba(0,137,123,.3);
+}
+.opt:hover:not(.disabled) .opt-letter { color:var(--green); border-color:var(--green-mid); background:var(--white); }
+
+.btn-next {
+  width:100%; padding:16px;
+  background:var(--bg); border:2px solid var(--border2);
+  border-radius:var(--r); color:var(--muted);
+  font-family:'Poppins',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; transition:all .22s; box-shadow:var(--shadow-sm);
+}
+.btn-next:hover { border-color:var(--green-mid); color:var(--green); }
+.btn-next.active {
+  background:linear-gradient(135deg, var(--green), var(--green-light));
+  color:#fff; border-color:transparent; box-shadow:0 6px 22px rgba(0,137,123,.3);
+}
+.btn-next.active:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+
+/* ══════════════════════════════════════════
+   SUMMARY SCREEN
+══════════════════════════════════════════ */
+#screen-summary { max-width:700px; margin:0 auto; width:100%; }
+
+.summary-hero {
+  background:linear-gradient(135deg, var(--navy), var(--green));
+  border-radius:var(--r); padding:32px 28px;
+  text-align:center; margin-bottom:24px;
+  box-shadow:var(--shadow-md);
+}
+.score-ring { width:150px; height:150px; margin:0 auto 18px; position:relative; display:flex; align-items:center; justify-content:center; }
+.score-ring svg { position:absolute; inset:0; transform:rotate(-90deg); }
+.score-ring-track { fill:none; stroke:rgba(255,255,255,.2); stroke-width:9; }
+.score-ring-fill { fill:none; stroke-width:9; stroke-linecap:round; stroke-dasharray:377; transition:stroke-dashoffset 1.6s cubic-bezier(.25,.8,.25,1); }
+.score-num { font-family:'Poppins',sans-serif; font-size:40px; font-weight:900; color:#fff; line-height:1; }
+.score-label { font-size:11px; color:rgba(255,255,255,.7); margin-top:4px; font-family:'JetBrains Mono',monospace; }
+.grade-badge {
+  display:inline-block; padding:8px 22px; border-radius:100px;
+  font-family:'Poppins',sans-serif; font-size:14px; font-weight:800; margin-bottom:8px;
+}
+#grade-msg { color:rgba(255,255,255,.8); font-size:14px; margin-top:4px; }
+
+.stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+.stat {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:18px; text-align:center; box-shadow:var(--shadow-sm);
+}
+.stat .s-num { font-family:'Poppins',sans-serif; font-size:30px; font-weight:900; }
+.stat .s-lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:5px; font-family:'JetBrains Mono',monospace; font-weight:600; }
+
+.cat-breakdown { margin-bottom:28px; }
+.breakdown-title {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--muted);
+  margin:0 0 16px; display:flex; align-items:center; gap:12px;
+}
+.breakdown-title::after { content:''; flex:1; height:2px; background:var(--border); }
+.cat-row { margin-bottom:16px; }
+.cat-head { display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; align-items:center; font-weight:700; }
+.cat-head span:last-child {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+  color:var(--muted); background:var(--bg); padding:2px 10px; border-radius:100px; border:1px solid var(--border);
+}
+.cat-bar-bg { height:10px; background:var(--border); border-radius:8px; overflow:hidden; }
+.cat-bar-fill { height:100%; border-radius:8px; transition:width 1.2s .4s cubic-bezier(.25,.8,.25,1); }
+
+/* Review section */
+.section-title {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.12em; color:var(--muted);
+  margin:28px 0 14px; display:flex; align-items:center; gap:12px;
+}
+.section-title::after { content:''; flex:1; height:2px; background:var(--border); }
+
+.review-card {
+  background:var(--white); border:2px solid var(--border);
+  border-radius:var(--r); padding:18px; margin-bottom:10px; box-shadow:var(--shadow-sm);
+}
+.review-card.correct-card { border-color:#A5D6A7; background:#F1F8F1; }
+.review-card.wrong-card   { border-color:#EF9A9A; background:#FFF5F5; }
+.review-card.skipped-card { border-color:#FFE082; background:#FFFDE7; }
+
+.rv-header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:12px; }
+.rv-q { font-size:13px; line-height:1.6; font-weight:700; flex:1; color:var(--text); }
+.rv-badge {
+  flex-shrink:0; padding:4px 12px; border-radius:100px;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  font-family:'JetBrains Mono',monospace;
+}
+.rv-badge.c { background:#E8F5E9; color:#00897B; border:1.5px solid #A5D6A7; }
+.rv-badge.w { background:var(--red-pale); color:var(--red); border:1.5px solid #EF9A9A; }
+.rv-badge.s { background:#FFFDE7; color:#F57C00; border:1.5px solid #FFE082; }
+.rv-answers { display:flex; flex-direction:column; gap:5px; }
+.rv-ans { display:flex; align-items:center; gap:10px; font-size:12px; padding:8px 12px; border-radius:8px; font-weight:600; }
+.rv-ans.correct-ans { background:#E8F5E9; color:#00897B; }
+.rv-ans.wrong-ans   { background:var(--red-pale); color:var(--red); }
+
+.summary-brand {
+  text-align:center; margin:28px 0 14px; padding:22px;
+  background:linear-gradient(135deg, var(--green-pale), #F0F8F0);
+  border:2px solid var(--green-mid); border-radius:var(--r);
+  font-size:12px; color:var(--muted); line-height:2.2; box-shadow:var(--shadow-sm);
+}
+.summary-brand strong { color:var(--green); font-family:'Poppins',sans-serif; font-size:15px; font-weight:800; }
+.save-indicator { text-align:center; padding:12px; font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; font-weight:600; }
+.save-indicator.saving { color:var(--amber); }
+.save-indicator.saved  { color:var(--green); }
+
+.btn-restart {
+  width:100%; padding:17px;
+  background:linear-gradient(135deg, var(--green), var(--green-light));
+  color:#fff; border:none; border-radius:var(--r);
+  font-family:'Poppins',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; margin-top:8px; transition:all .22s;
+  box-shadow:0 6px 22px rgba(0,137,123,.28);
+}
+.btn-restart:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+
+/* ══════════════════════════════════════════
+   CONFIG NOTICE
+══════════════════════════════════════════ */
+.config-notice {
+  background:var(--red-pale); border:1.5px solid #EF9A9A;
+  border-radius:var(--r-sm); padding:14px 16px; margin-bottom:20px;
+  font-size:13px; color:var(--red); display:none; line-height:1.6; font-weight:600;
+}
+.config-notice.show { display:block; }
+.config-notice a { color:var(--green); text-decoration:underline; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+.app-footer {
+  width:100%; background:var(--navy);
+  padding:16px 32px; text-align:center;
+  font-size:12px; color:rgba(255,255,255,.6);
+  font-family:'JetBrains Mono',monospace; letter-spacing:.04em; margin-top:auto;
+}
+.app-footer strong { color:#A5D6A7; }
+
+/* ══════════════════════════════════════════
+   LOADING
+══════════════════════════════════════════ */
+.loading-overlay {
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:200; gap:20px;
+}
+.spinner {
+  width:48px; height:48px; border:4px solid var(--border);
+  border-top-color:var(--green); border-radius:50%; animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-overlay.hidden { display:none; }
+
+/* ══════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════ */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:640px){
+  .topbar { padding:6px 16px; font-size:11px; }
+  .navbar { padding:12px 16px; }
+  .hero-content { padding:36px 20px 32px; max-width:100%; }
+  .hero-decorative { display:none; }
+  .feature-strip-inner { grid-template-columns:repeat(2,1fr); }
+  .main-content { padding:28px 16px 48px; }
+  .quiz-header { grid-template-columns:auto auto; }
+  .category-pill { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div style="color:var(--muted);font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:600;">Loading exam system…</div>
+</div>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <span>📞 Call Us Now: (+234) 806 708 9033</span>
+  <div class="topbar-right">
+    <span>📧 <a href="#"><span class="__cf_email__" data-cfemail="81f2f4f1f1eef3f5c1eef5eef5e4e2e9afe2eeec">ototechsolutions@gmail.com</span></a></span>
+    <span id="header-right">🔒 Access Required</span>
+  </div>
+</div>
+
+<!-- ══ NAVBAR ══ -->
+<div class="navbar">
+  <div class="nav-brand">
+    <div class="nav-brand-icon" style="background:none;box-shadow:none;border-radius:0;width:auto;height:52px;padding:0;">
+      <img src="data:image/png;base64,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" alt="Ototech System Solutions" style="height:52px;width:auto;display:block;" />
+    </div>
+    <div class="nav-brand-text">
+      <strong style="color:var(--navy);">Ototech System Solutions</strong>
+      <span>Exam Portal · Nigeria</span>
+    </div>
+  </div>
+  <div class="nav-status">
+    <div class="nav-dot"></div>
+    Online Questions Management System
+  </div>
+</div>
+
+<!-- ══ HERO BANNER ══ -->
+<div class="hero-section">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">📚 Through Knowledge</div>
+    <div class="hero-title">
+      Explore the <span>Future</span><br>of Learning With Us
+    </div>
+    <p class="hero-desc">
+      Engage with dynamic exam questions across Civil Service, Current Affairs, Education, ICT, Religion and Common Entrance — building competence and confidence.
+    </p>
+  </div>
+  <div class="hero-decorative">
+    <div class="hero-deco-card"><div class="dc-icon">📋</div><div class="dc-label">Civil Service</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">🌍</div><div class="dc-label">Affairs</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">🎓</div><div class="dc-label">Education</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">💻</div><div class="dc-label">ICT</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">🕌</div><div class="dc-label">Religion</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">📝</div><div class="dc-label">Entrance</div></div>
+  </div>
+</div>
+
+<!-- ══ FEATURE STRIP ══ -->
+<div class="feature-strip">
+  <div class="feature-strip-inner">
+    <div class="feature-item">
+      <div class="feature-icon-wrap">🔒</div>
+      <div class="feature-title">Secure Access</div>
+      <div class="feature-desc">Category-locked access codes ensure each participant only sees their assigned exam.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrap">⚡</div>
+      <div class="feature-title">Real-Time Sync</div>
+      <div class="feature-desc">Questions sync live.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrap">📊</div>
+      <div class="feature-title">Instant Results</div>
+      <div class="feature-desc">Detailed score breakdown and review of every question immediately after submission.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon-wrap">🏆</div>
+      <div class="feature-title">Grade Tracking</div>
+      <div class="feature-desc">Results are saved to the cloud with grade, percentage and full answer details.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP CONTENT ══ -->
+<div class="main-content">
+
+  <!-- ── LOCK SCREEN ── -->
+  <div class="screen active" id="screen-lock">
+    <div class="section-header" style="margin-bottom:24px;">
+      <div class="section-eyebrow">Step 1 of 3</div>
+      <div class="section-title">Access <span>Verification</span></div>
+      <p class="section-sub">Enter your assigned access code to unlock your examination category.</p>
+    </div>
+
+    <div class="lock-layout">
+      <div class="lock-left">
+        <div class="lock-icon">🔐</div>
+        <div class="lock-title">Permission <span>Required</span></div>
+        <p class="lock-sub">This exam is protected by Ototech System Solutions. Enter your access code to begin.</p>
+        <div class="lock-features">
+          <div class="lock-feat"><div class="lock-feat-icon">📋</div><span>Civil Service Rules</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">🌍</div><span>Current Affairs</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">🎓</div><span>Education</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">💻</div><span>ICT</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">🕌</div><span>Religion</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">📝</div><span>Common Entrance</span></div>
+        </div>
+      </div>
+
+      <div class="lock-right">
+        <div class="config-notice" id="config-notice">
+          ⚠ Supabase not configured. <a href="#" onclick="showConfigHelp()">Setup instructions →</a>
+          Running in offline mode with default questions.
+        </div>
+        <div class="lock-form-title">Enter Access Code</div>
+        <p class="lock-form-sub">Your access code was provided by the exam administrator. Each code is specific to one exam category.</p>
+        <div class="code-label">Access Code</div>
+        <div class="code-input-row">
+          <input type="password" class="code-input" id="code-input" placeholder="Enter code…" maxlength="30" autocomplete="off" onkeydown="if(event.key==='Enter')checkCode()"/>
+          <button class="btn-gold" onclick="checkCode()">Unlock →</button>
+        </div>
+        <div class="lock-error" id="lock-error">⚠ Incorrect access code. Try again.</div>
+        <div class="attempts-left" id="attempts-left"></div>
+        <div class="lock-access-hint" id="lock-access-hint" style="display:none;"></div>
+        <div class="lockout-msg" id="lockout-msg">🔒 Access locked after 5 failed attempts.<br>Contact <strong>Ototech System Solutions</strong> to reset your access.</div>
+        <div class="lock-footer"><strong>Ototech System Solutions</strong> · Online Questions Management System<br>Authorised users only — Unauthorised access is prohibited.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REGISTRATION SCREEN ── -->
+  <div class="screen" id="screen-register">
+    <div class="section-header" style="margin-bottom:24px;">
+      <div class="section-eyebrow">Step 2 of 3</div>
+      <div class="section-title">Your <span>Details</span></div>
+      <p class="section-sub">Fill in your information and confirm your exam category to proceed.</p>
+    </div>
+
+    <div class="welcome-badge"><div class="dot"></div> OTOTECH EXAM PORTAL</div>
+
+    <div class="reg-layout">
+      <!-- Left panel: personal info -->
+      <div class="reg-panel">
+        <div class="reg-panel-title">
+          <div class="rpt-icon">👤</div> Personal Information
+        </div>
+        <div class="field"><label>Full Name *</label><input type="text" id="reg-name" placeholder="e.g. Amaka Okafor" /></div>
+        <div class="field"><label>Email Address *</label><input type="email" id="reg-email" placeholder="e.g. amaka@email.com" /></div>
+        <div class="field"><label>Phone Number</label><input type="tel" id="reg-phone" placeholder="e.g. 08012345678" /></div>
+        <div class="field"><label>Organisation / School</label><input type="text" id="reg-org" placeholder="e.g. Ototech System Solutions" /></div>
+      </div>
+      <!-- Right panel: exam info -->
+      <div class="reg-panel">
+        <div class="reg-panel-title">
+          <div class="rpt-icon">📋</div> Exam Information
+        </div>
+        <div style="background:var(--green-pale);border:2px solid var(--green-mid);border-radius:var(--r);padding:20px;margin-bottom:16px;">
+          <div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:var(--green-dark);margin-bottom:12px;">📌 Exam Rules</div>
+          <ul style="font-size:13px;color:var(--muted);line-height:2;padding-left:18px;">
+            <li>Answer all questions</li>
+            <li>Total time: <strong style="color:var(--green-dark)">25 minutes</strong></li>
+            <li>Each question has 4 options</li>
+            <li>Results are saved automatically</li>
+            <li>No going back to previous questions</li>
+          </ul>
+        </div>
+        <div style="background:var(--amber-pale);border:2px solid rgba(245,124,0,.3);border-radius:var(--r);padding:16px;">
+          <div style="font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:var(--amber);margin-bottom:8px;">⚠️ Important Notice</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.7;">Ensure you have a stable internet connection. Do not close the browser during the exam. Your code is valid for one attempt only.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category selector - full width -->
+    <div class="cat-full">
+      <div class="cat-section-title">Select Exam Category *</div>
+      <div class="cat-lock-banner" id="cat-lock-banner" style="display:none;"></div>
+      <div class="cat-select-grid" id="cat-select-grid">
+        <div class="cat-select-card" data-cat="civil" onclick="selectCategory('civil')">
+          <div class="csc-icon">📋</div>
+          <div class="csc-name">Civil Service Rules</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+        <div class="cat-select-card" data-cat="affairs" onclick="selectCategory('affairs')">
+          <div class="csc-icon">🌍</div>
+          <div class="csc-name">Current Affairs</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+        <div class="cat-select-card" data-cat="edu" onclick="selectCategory('edu')">
+          <div class="csc-icon">🎓</div>
+          <div class="csc-name">Education</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+        <div class="cat-select-card" data-cat="ict" onclick="selectCategory('ict')">
+          <div class="csc-icon">💻</div>
+          <div class="csc-name">ICT</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+        <div class="cat-select-card" data-cat="religion" onclick="selectCategory('religion')">
+          <div class="csc-icon">🕌</div>
+          <div class="csc-name">Religion</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+        <div class="cat-select-card" data-cat="entrance" onclick="selectCategory('entrance')">
+          <div class="csc-icon">📝</div>
+          <div class="csc-name">Common Entrance</div>
+          <div class="csc-count">50 Questions</div>
+        </div>
+      </div>
+      <div class="cat-select-error" id="cat-select-error">⚠ Please select an exam category.</div>
+    </div>
+
+    <button class="btn-full" onclick="submitRegistration()">Continue to Exam →</button>
+  </div>
+
+  <!-- ── WELCOME SCREEN ── -->
+  <div class="screen" id="screen-welcome">
+    <div class="section-header" style="margin-bottom:24px;">
+      <div class="section-eyebrow">Step 3 of 3</div>
+      <div class="section-title">Ready to <span>Begin</span></div>
+    </div>
+
+    <div class="welcome-hero">
+      <div class="welcome-badge"><div class="dot"></div> OTOTECH EXAM PORTAL — NIGERIA</div>
+      <h1>ONLINE <span class="c-gold"><span class="c-green">EXAMINATION</span></span></h1>
+      <p class="subtitle" id="exam-description">Select your category and answer all questions within 25 minutes.</p>
+      <div id="participant-info"></div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="meta-card"><div class="num" style="color:var(--amber)" id="meta-qcount">50</div><div class="lbl">Questions</div></div>
+      <div class="meta-card"><div class="num" style="color:var(--green)">25m</div><div class="lbl">Total Time</div></div>
+      <div class="meta-card"><div class="num" style="color:var(--blue)">6</div><div class="lbl">Categories</div></div>
+    </div>
+
+    <div class="cat-tags" id="welcome-cat-tags">
+      <div class="tag civil">📋 Civil Service Rules</div>
+      <div class="tag affairs">🌍 Current Affairs</div>
+      <div class="tag edu">🎓 Education</div>
+      <div class="tag ict">💻 ICT</div>
+      <div class="tag religion">🕌 Religion</div>
+      <div class="tag entrance">📝 Common Entrance</div>
+    </div>
+
+    <button class="btn-full" onclick="startExam()">Begin Examination →</button>
+  </div>
+
+  <!-- ── QUIZ SCREEN ── -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div class="q-counter">Question <span id="q-num">1</span> of <span id="q-total">50</span></div>
+      <span class="category-pill" id="cat-pill">Civil Service</span>
+      <div class="global-timer" id="global-timer">
+        <span id="timer-display">25:00</span>
+        <div class="timer-label">remaining</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    <div class="question-card">
+      <div class="question-text" id="q-text"></div>
+    </div>
+    <div class="options" id="options-container"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <!-- ── SUMMARY SCREEN ── -->
+  <div class="screen" id="screen-summary">
+    <div class="section-header" style="margin-bottom:24px;">
+      <div class="section-eyebrow">Exam Complete</div>
+      <div class="section-title">Your <span>Results</span></div>
+    </div>
+
+    <div class="summary-hero">
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="score-ring-track" cx="60" cy="60" r="60"/>
+          <circle class="score-ring-fill" id="ring-fill" cx="60" cy="60" r="60" style="stroke-dashoffset:377"/>
+        </svg>
+        <div>
+          <div class="score-num" id="score-num">0</div>
+          <div class="score-label">out of <span id="score-total">50</span></div>
+        </div>
+      </div>
+      <div class="grade-badge" id="grade-badge">—</div>
+      <div id="grade-msg"></div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="s-num" style="color:#00897B" id="st-correct">0</div><div class="s-lbl">Correct</div></div>
+      <div class="stat"><div class="s-num" style="color:var(--red)" id="st-wrong">0</div><div class="s-lbl">Wrong</div></div>
+      <div class="stat"><div class="s-num" style="color:var(--amber)" id="st-skipped">0</div><div class="s-lbl">Skipped</div></div>
+    </div>
+
+    <div class="cat-breakdown">
+      <div class="breakdown-title">Category Breakdown</div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#00897B">📋 Civil Service Rules</span><span id="cb-civil">0/20</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-civil" style="width:0%;background:#00897B"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#F57C00">🌍 Current Affairs</span><span id="cb-affairs">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-affairs" style="width:0%;background:#F57C00"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#1565C0">🎓 Education</span><span id="cb-edu">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-edu" style="width:0%;background:#1565C0"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#6A1B9A">💻 ICT</span><span id="cb-ict">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-ict" style="width:0%;background:#6A1B9A"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#00695C">🕌 Religion</span><span id="cb-religion">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-religion" style="width:0%;background:#00695C"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#AD1457">📝 Common Entrance</span><span id="cb-entrance">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-entrance" style="width:0%;background:#AD1457"></div></div></div>
+    </div>
+
+    <div id="review-container"></div>
+    <div class="save-indicator" id="save-indicator"></div>
+    <div class="summary-brand">
+      <strong>Ototech System Solutions</strong><br>
+      Online Questions Management System · All rights reserved<br>
+      Results generated: <span id="result-date"></span>
+    </div>
+    <button class="btn-restart" onclick="restartExam()">🔄 Restart Examination</button>
+  </div>
+
+</div><!-- /main-content -->
+
+<!-- FOOTER -->
+<div class="app-footer">Powered by <strong>Ototech System Solutions</strong> · Online Exam Portal · Nigeria</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══════════════════════════════════════════════════
+//  CONFIGURATION — Replace with your Supabase details
+//  Get these from: supabase.com → Project → Settings → API
+// ══════════════════════════════════════════════════
+const SUPABASE_URL = 'https://ihdwpjycghobodtxwyut.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MTaQq8iBEaR6DIDlLeb4JQ_T3GJtICU';
+// ══════════════════════════════════════════════════
+//  FALLBACK QUESTIONS — 50 per category (300 total)
+// ══════════════════════════════════════════════════
+const FALLBACK_QUESTIONS = [
+  // ── CIVIL SERVICE RULES (50) ──
+  {id:1,cat:'civil',q:'Under the Nigerian Civil Service Rules, what is the minimum notice period for resignation of a confirmed officer?',options:['One month','Three months','Two months','Six months'],answer:0},
+  {id:2,cat:'civil',q:'Which body is primarily responsible for the appointment, promotion, and discipline of Federal civil servants in Nigeria?',options:['Federal Executive Council','Federal Civil Service Commission','Office of the Head of Service','National Council of State'],answer:1},
+  {id:3,cat:'civil',q:'According to Civil Service Rules, an officer on suspension shall receive what fraction of his salary?',options:['Full salary','Three-quarters salary','Half salary','No salary'],answer:2},
+  {id:4,cat:'civil',q:'What is the maximum number of days allowed for casual leave per year under Nigerian Civil Service Rules?',options:['7 days','10 days','14 days','21 days'],answer:0},
+  {id:5,cat:'civil',q:'In the Nigerian civil service, the Scheme of Service is primarily designed to:',options:['Determine salaries of officers','Define entry qualifications and career progression','Outline disciplinary procedures','Set annual targets for MDAs'],answer:1},
+  {id:6,cat:'civil',q:'A civil servant found guilty of gross misconduct can be subjected to:',options:['Only demotion','Only fine','Dismissal without benefits','Transfer to another ministry'],answer:2},
+  {id:7,cat:'civil',q:'What document governs the financial dealings of Nigerian federal civil servants?',options:['Finance Act','Financial Regulations','Annual Appropriation Act','Public Procurement Act'],answer:1},
+  {id:8,cat:'civil',q:"A civil servant's annual leave entitlement after 10 years of service is:",options:['21 days','30 days','28 days','35 days'],answer:1},
+  {id:9,cat:'civil',q:'Which of the following is punishable as serious misconduct?',options:['Arriving 10 minutes late once','Engaging in partisan political activities','Wearing informal clothing','Missing a single meeting'],answer:1},
+  {id:10,cat:'civil',q:'The probationary period for a newly appointed officer in the Nigerian civil service is:',options:['6 months','1 year','2 years','3 years'],answer:2},
+  {id:11,cat:'civil',q:'Sick leave with full pay for a confirmed officer can be granted for a maximum of:',options:['3 months','6 months','1 year','2 years'],answer:1},
+  {id:12,cat:'civil',q:'IPPIS was introduced primarily to:',options:['Monitor civil servant performance','Eliminate ghost workers from the payroll','Automate promotion exercises','Manage pension fund investments'],answer:1},
+  {id:13,cat:'civil',q:'Maternity leave for female civil servants in Nigeria is:',options:['6 weeks','8 weeks','12 weeks','3 months'],answer:2},
+  {id:14,cat:'civil',q:'Under the Pension Reform Act, the mandatory contribution rate for civil servants is:',options:['Employee 7.5%, Employer 7.5%','Employee 5%, Employer 10%','Employee 10%, Employer 5%','Employee 8%, Employer 12%'],answer:0},
+  {id:15,cat:'civil',q:'In the Nigerian civil service, Grade Level 16 and above are classified as:',options:['Junior staff','Middle management','Senior management','Directors and above'],answer:2},
+  {id:16,cat:'civil',q:'The Head of the Civil Service of the Federation holds which rank?',options:['Grade Level 16','Equivalent of Permanent Secretary','Minister','Above Permanent Secretary'],answer:3},
+  {id:17,cat:'civil',q:'Under which Chapter of Civil Service Rules are conduct and discipline provisions covered?',options:['Chapter 1','Chapter 4','Chapter 10','Chapter 16'],answer:1},
+  {id:18,cat:'civil',q:'An officer wishing to undertake outside employment must obtain approval from:',options:['The Ministry of Finance','His immediate supervisor','The appropriate Commission','The Inspector General'],answer:2},
+  {id:19,cat:'civil',q:'A "Schedule Officer" in the Nigerian civil service is:',options:['An officer who manages schedules','An accounting officer responsible for expenditure control','An officer due for promotion','An officer listed for transfer'],answer:1},
+  {id:20,cat:'civil',q:'The "Estacade" in the Nigerian civil service context refers to:',options:['A type of office accommodation','A daily subsistence allowance for officers on tour','A financial regulatory body','A grade level classification'],answer:1},
+  {id:21,cat:'civil',q:'Which of the following is NOT a legitimate reason for dismissal of a civil servant?',options:['Theft of public funds','Conviction of a criminal offence','Failing a promotion exam once','Gross misconduct'],answer:2},
+  {id:22,cat:'civil',q:'The Federal Civil Service Commission was established under which section of the 1999 Constitution?',options:['Section 153','Section 197','Section 208','Section 174'],answer:0},
+  {id:23,cat:'civil',q:'What is the minimum qualification for appointment into the civil service at Grade Level 07?',options:['WAEC certificate','OND/NCE','HND/B.Sc degree','Postgraduate degree'],answer:2},
+  {id:24,cat:'civil',q:'Paternity leave for male civil servants in Nigeria is:',options:['3 days','5 days','7 days','14 days'],answer:1},
+  {id:25,cat:'civil',q:'Which of the following describes "secondment" in the civil service?',options:['Transfer of an officer to another ministry permanently','Temporary transfer to another organisation while retaining substantive post','Demotion to a lower grade','Promotion to a higher grade'],answer:1},
+  {id:26,cat:'civil',q:'The official working hours in the Nigerian civil service are:',options:['7am – 3pm','8am – 4pm','8am – 5pm','9am – 5pm'],answer:1},
+  {id:27,cat:'civil',q:'What happens to a civil servant who is absent from duty without leave for more than 14 days?',options:['They are warned','They are fined','They are deemed to have vacated their post','They are transferred'],answer:2},
+  {id:28,cat:'civil',q:'Which grade level is the entry point for a direct recruit with a first degree in the Nigerian civil service?',options:['Grade Level 06','Grade Level 07','Grade Level 08','Grade Level 09'],answer:2},
+  {id:29,cat:'civil',q:'An "Acting" appointment in the civil service means:',options:['A permanent appointment to a higher post','A temporary appointment to a higher post pending substantive filling','A lateral transfer','A contract appointment'],answer:1},
+  {id:30,cat:'civil',q:'The body that handles discipline of officers in the police force equivalent to FCSC is:',options:['ICPC','PSC (Police Service Commission)','National Security Council','EFCC'],answer:1},
+  {id:31,cat:'civil',q:'Study leave with pay in the Nigerian civil service is granted for a maximum of:',options:['1 year','2 years','3 years','4 years'],answer:2},
+  {id:32,cat:'civil',q:'Which of these is NOT one of the core values of the Nigerian civil service?',options:['Integrity','Accountability','Profitability','Loyalty'],answer:2},
+  {id:33,cat:'civil',q:'The annual performance evaluation report for civil servants is called:',options:['Staff Appraisal Form','Annual Confidential Report (ACR)','Performance Review Sheet','Staff Assessment Record'],answer:1},
+  {id:34,cat:'civil',q:'An officer who is compulsorily retired is entitled to:',options:['Full pension benefits','Reduced pension benefits','No pension at all','Only gratuity'],answer:0},
+  {id:35,cat:'civil',q:'Which circular governs the conduct of civil servants on social media in Nigeria?',options:['OHCSF Circular No. 01/2020','OHCSF Social Media Policy 2019','FMF Circular 2018','FCSC Directive 2021'],answer:1},
+  {id:36,cat:'civil',q:'What is the correct procedure for a civil servant who wishes to contest an election?',options:['Apply for study leave','Resign from the civil service before contesting','Apply for annual leave','Get permission from the Permanent Secretary'],answer:1},
+  {id:37,cat:'civil',q:'The principle of "due process" in the civil service means:',options:['Following all laid down rules and procedures before any action','Paying all dues promptly','Processing files quickly','Approving requests without delay'],answer:0},
+  {id:38,cat:'civil',q:'Which of the following is an example of financial misconduct in the civil service?',options:['Taking annual leave','Submitting a wrong timesheet','Falsifying payment vouchers','Missing a departmental meeting'],answer:2},
+  {id:39,cat:'civil',q:'Government "subvention" to a parastatal refers to:',options:['A loan from the government','An annual grant from government to fund operations','A tax collected by the parastatal','A penalty imposed on the parastatal'],answer:1},
+  {id:40,cat:'civil',q:'What does "Gazette" mean in the Nigerian civil service context?',options:['An internal memo','The official government publication of laws, appointments and notices','A financial report','A staff newsletter'],answer:1},
+  {id:41,cat:'civil',q:'An officer on interdiction pending investigation receives:',options:['Full salary','Half salary','No salary','Allowances only'],answer:1},
+  {id:42,cat:'civil',q:'The Public Service Rules (PSR) in Nigeria were most recently revised in:',options:['1999','2008','2011','2021'],answer:1},
+  {id:43,cat:'civil',q:'What is the difference between a "ministry" and a "department" in the Nigerian civil service?',options:['There is no difference','A ministry is headed by a minister while a department is a subdivision under a ministry','A department is bigger than a ministry','A ministry handles only federal matters'],answer:1},
+  {id:44,cat:'civil',q:'A civil servant\'s entitlement to pension vests after a minimum of:',options:['5 years of service','10 years of service','15 years of service','20 years of service'],answer:1},
+  {id:45,cat:'civil',q:'Which of the following best describes "due process" in procurement?',options:['Buying the cheapest goods','Following the Bureau of Public Procurement Act guidelines','Approving expenditure quickly','Buying from preferred vendors'],answer:1},
+  {id:46,cat:'civil',q:'The Servicom initiative in Nigeria was designed to:',options:['Fight corruption in government','Ensure quality service delivery to citizens','Manage government payroll','Provide loans to civil servants'],answer:1},
+  {id:47,cat:'civil',q:'Which body was established to fight corruption in the Nigerian civil service?',options:['EFCC','ICPC','DSS','NBS'],answer:1},
+  {id:48,cat:'civil',q:'What is the retirement age for civil servants in Nigeria?',options:['55 years or 30 years of service','60 years or 35 years of service','65 years or 35 years of service','60 years or 40 years of service'],answer:1},
+  {id:49,cat:'civil',q:'The "Treasury Single Account" (TSA) policy in Nigeria was fully implemented in:',options:['2011','2013','2015','2017'],answer:2},
+  {id:50,cat:'civil',q:'An "Accounting Officer" in the Nigerian civil service is typically the:',options:['Minister','Permanent Secretary','Director of Finance','Accountant General'],answer:1},
+
+  // ── CURRENT AFFAIRS (50) ──
+  {id:51,cat:'affairs',q:'Who is the current President of Nigeria as of 2024–2025?',options:['Muhammadu Buhari','Peter Obi','Bola Ahmed Tinubu','Atiku Abubakar'],answer:2},
+  {id:52,cat:'affairs',q:'In 2023, Nigeria removed the subsidy on which commodity?',options:['Electricity','Petrol (fuel subsidy)','Cooking gas','Kerosene'],answer:1},
+  {id:53,cat:'affairs',q:'The EFCC Chairman as of 2024 is:',options:['Ibrahim Magu','Abdulrasheed Bawa','Ola Olukoyede','Nuhu Ribadu'],answer:2},
+  {id:54,cat:'affairs',q:"Nigeria's 2024 national budget was titled:",options:['Budget of Consolidation','Budget of Renewed Hope','Budget of Renewal','Budget of Economic Restoration'],answer:1},
+  {id:55,cat:'affairs',q:'The CBN Governor appointed in 2023 is:',options:['Godwin Emefiele','Yemi Cardoso','Kingsley Moghalu','Lamido Sanusi'],answer:1},
+  {id:56,cat:'affairs',q:'Nigeria officially joined the AfCFTA as a full member in:',options:['2019','2021','2023','2024'],answer:2},
+  {id:57,cat:'affairs',q:'The "Renewed Hope Agenda" is associated with:',options:['National Assembly','The Presidency under Bola Tinubu','The Judiciary','Federal Ministry of Finance'],answer:1},
+  {id:58,cat:'affairs',q:'Which country hosted the 2023 AFCON?',options:['Nigeria','South Africa','Ivory Coast','Ghana'],answer:2},
+  {id:59,cat:'affairs',q:"Nigeria's Naira exchange rate unification in 2023 was championed by:",options:['The National Assembly','The CBN under new leadership','The Federal Ministry of Finance','The World Bank mission'],answer:1},
+  {id:60,cat:'affairs',q:'Which Nigerian state was created most recently (36th state)?',options:['Zamfara','Ebonyi','Ekiti','Gombe'],answer:2},
+  {id:61,cat:'affairs',q:'Who won the 2023 AFCON Golden Boot award?',options:['Victor Osimhen','Emilio Nsue','Sébastien Haller','Achraf Hakimi'],answer:1},
+  {id:62,cat:'affairs',q:'The National Population Commission (NPC) conducted Nigeria\'s national census in:',options:['2019','2021','2023','2024'],answer:2},
+  {id:63,cat:'affairs',q:'Nigeria\'s Vice President as of 2024 is:',options:['Yemi Osinbajo','Kashim Shettima','Peter Obi','Atiku Abubakar'],answer:1},
+  {id:64,cat:'affairs',q:'Which Nigerian won the Nobel Prize in Literature in 1986?',options:['Chinua Achebe','Wole Soyinka','Ben Okri','Chimamanda Adichie'],answer:1},
+  {id:65,cat:'affairs',q:'The "Naira Redesign" policy in Nigeria was introduced in:',options:['2021','2022','2023','2024'],answer:1},
+  {id:66,cat:'affairs',q:'ECOWAS headquarters is located in:',options:['Dakar','Accra','Lagos','Abuja'],answer:2},
+  {id:67,cat:'affairs',q:'Which country did Nigeria defeat in the 2023 AFCON semi-finals?',options:['Angola','Cameroon','South Africa','Ghana'],answer:2},
+  {id:68,cat:'affairs',q:'What was the name of Nigeria\'s 2023 general election system used by INEC?',options:['SMART voting','BIVAS (Bimodal Voter Accreditation System)','Electronic Voting Machine','Direct Polling System'],answer:1},
+  {id:69,cat:'affairs',q:'Who was declared winner of Nigeria\'s 2023 presidential election?',options:['Atiku Abubakar','Peter Obi','Bola Ahmed Tinubu','Rabiu Kwankwaso'],answer:2},
+  {id:70,cat:'affairs',q:'The National Security Adviser (NSA) to President Tinubu as of 2024 is:',options:['Babagana Monguno','Nuhu Ribadu','Zakari Usman','Mohammed Badaru'],answer:1},
+  {id:71,cat:'affairs',q:'Which Nigerian city hosted the 2024 ECOWAS Summit?',options:['Lagos','Kano','Abuja','Ibadan'],answer:2},
+  {id:72,cat:'affairs',q:'Nigeria\'s Senate President as of 2024 is:',options:['Ahmad Lawan','Godswill Akpabio','Bukola Saraki','David Mark'],answer:1},
+  {id:73,cat:'affairs',q:'The Nigerian Electricity Regulatory Commission (NERC) oversees:',options:['Oil and gas regulation','Power sector regulation','Telecommunications regulation','Water supply regulation'],answer:1},
+  {id:74,cat:'affairs',q:'Which Nigerian state has the highest population according to recent estimates?',options:['Lagos','Kano','Rivers','Oyo'],answer:0},
+  {id:75,cat:'affairs',q:'The "Student Loan Act" was signed into law in Nigeria in:',options:['2022','2023','2024','2025'],answer:1},
+  {id:76,cat:'affairs',q:'Who is the current Chairman of the Independent National Electoral Commission (INEC) as of 2024?',options:['Attahiru Jega','Mahmood Yakubu','Amina Zakari','Charles Soludo'],answer:1},
+  {id:77,cat:'affairs',q:'Nigeria became a member of OPEC in which year?',options:['1960','1965','1971','1975'],answer:2},
+  {id:78,cat:'affairs',q:'The Nigerian National Petroleum Company Limited (NNPCL) replaced NNPC in:',options:['2019','2021','2022','2023'],answer:2},
+  {id:79,cat:'affairs',q:'Which country is Nigeria\'s largest trading partner?',options:['USA','China','UK','India'],answer:1},
+  {id:80,cat:'affairs',q:'Nigeria\'s Speaker of the House of Representatives as of 2024 is:',options:['Femi Gbajabiamila','Tajudeen Abbas','Yakubu Dogara','Dimeji Bankole'],answer:1},
+  {id:81,cat:'affairs',q:'The Dangote Refinery is located in which state?',options:['Delta','Ogun','Lagos','Rivers'],answer:2},
+  {id:82,cat:'affairs',q:'Nigeria\'s Minister of Finance as of 2024 is:',options:['Zainab Ahmed','Wale Edun','Kemi Adeosun','Ngozi Okonjo-Iweala'],answer:1},
+  {id:83,cat:'affairs',q:'Which country won the 2022 FIFA World Cup?',options:['France','Brazil','Argentina','Germany'],answer:2},
+  {id:84,cat:'affairs',q:'The African Development Bank (AfDB) headquarters is in:',options:['Nairobi','Lagos','Abidjan','Accra'],answer:2},
+  {id:85,cat:'affairs',q:'Nigeria\'s current Chief Justice as of 2024 is:',options:['Kayode Ariwoola','Tanko Muhammad','Ibrahim Tanko Muhammad','Olukayode Ariwoola'],answer:0},
+  {id:86,cat:'affairs',q:'The Comprehensive Africa Agriculture Development Programme (CAADP) was launched by:',options:['UN','World Bank','African Union','ECOWAS'],answer:2},
+  {id:87,cat:'affairs',q:'The 2023 coup in Niger Republic ousted which president?',options:['Mahamadou Issoufou','Mohamed Bazoum','Mahamane Ousmane','Ali Saibou'],answer:1},
+  {id:88,cat:'affairs',q:'Nigeria\'s first satellite (NigeriaSat-1) was launched in:',options:['2000','2003','2005','2008'],answer:1},
+  {id:89,cat:'affairs',q:'Which is the newest addition to the UN Security Council permanent members?',options:['Germany','Japan','India','None — P5 unchanged'],answer:3},
+  {id:90,cat:'affairs',q:'The International Criminal Court (ICC) is headquartered in:',options:['Geneva','New York','The Hague','Brussels'],answer:2},
+  {id:91,cat:'affairs',q:'Which Nigerian bank is the largest by total assets as of 2024?',options:['GTBank','Zenith Bank','Access Bank','First Bank'],answer:2},
+  {id:92,cat:'affairs',q:'The National Agency for the Prohibition of Trafficking in Persons (NAPTIP) is headed as of 2024 by:',options:['Julie Okah-Donli','Fatima Waziri-Azi','Arinze Orakwe','Binta Bello'],answer:1},
+  {id:93,cat:'affairs',q:'Nigeria\'s current Inspector General of Police as of 2024 is:',options:['Usman Alkali Baba','Ibrahim Idris','Kayode Egbetokun','Mohammed Adamu'],answer:2},
+  {id:94,cat:'affairs',q:'Which country hosted the 2023 G20 Summit?',options:['Indonesia','Japan','India','South Africa'],answer:2},
+  {id:95,cat:'affairs',q:'Nigeria was suspended from the Commonwealth of Nations in:',options:['1993','1995','1999','2001'],answer:1},
+  {id:96,cat:'affairs',q:'The Petroleum Industry Act (PIA) was signed into law in Nigeria in:',options:['2019','2021','2022','2023'],answer:1},
+  {id:97,cat:'affairs',q:'Nigeria\'s current Minister of Education as of 2024 is:',options:['Adamu Adamu','Tahir Mamman','Sam Egwu','Ibrahim Shekarau'],answer:1},
+  {id:98,cat:'affairs',q:'The New Development Bank (NDB) was established by which group of nations?',options:['G7','G20','BRICS','ASEAN'],answer:2},
+  {id:99,cat:'affairs',q:'Nigeria\'s 2025 national budget size was approximately:',options:['₦15 trillion','₦25 trillion','₦35 trillion','₦45 trillion'],answer:2},
+  {id:100,cat:'affairs',q:'The African Continental Free Trade Area (AfCFTA) secretariat is located in:',options:['Addis Ababa','Accra','Nairobi','Lagos'],answer:1},
+
+  // ── EDUCATION (50) ──
+  {id:101,cat:'edu',q:'The body responsible for regulating basic and secondary education standards in Nigeria is:',options:['NUC','NBTE','NERDC','WAEC'],answer:2},
+  {id:102,cat:'edu',q:'The UBE Act provides for how many years of free and compulsory education?',options:['6 years','8 years','9 years','10 years'],answer:2},
+  {id:103,cat:'edu',q:'JAMB was established primarily to:',options:['Conduct WAEC examinations','Regulate university academic standards','Conduct unified admissions into tertiary institutions','Manage student bursaries'],answer:2},
+  {id:104,cat:'edu',q:'The 6-3-3-4 system of education in Nigeria means:',options:['6 primary, 3 JSS, 3 SSS, 4 university','6 primary, 3 middle, 3 technical, 4 college','6 nursery, 3 primary, 3 junior, 4 secondary','6 primary, 3 JSS, 3 technical, 4 polytechnic'],answer:0},
+  {id:105,cat:'edu',q:'The National Policy on Education in Nigeria was first published in:',options:['1965','1977','1985','1993'],answer:1},
+  {id:106,cat:'edu',q:'Which body conducts the National Common Entrance Examination for JSS1 admission?',options:['WAEC','JAMB','NECO','NERDC'],answer:2},
+  {id:107,cat:'edu',q:'NUC is empowered to do all of the following EXCEPT:',options:['Grant university licences','Set minimum academic standards','Conduct JAMB UTME','Accredit academic programmes'],answer:2},
+  {id:108,cat:'edu',q:"Under the Child's Right Act, the minimum working age is:",options:['12 years','15 years','16 years','18 years'],answer:1},
+  {id:109,cat:'edu',q:'TRCN was established to:',options:['Train teachers at federal colleges','Regulate and control the teaching profession','Set WAEC marking schemes','Manage UBEC funds'],answer:1},
+  {id:110,cat:'edu',q:'UBEC disburses matching grants to states on what basis?',options:['Population of school-age children only','States must provide counterpart funding','Annual federal allocation automatically','Request from state governors only'],answer:1},
+  {id:111,cat:'edu',q:'The National Examinations Council (NECO) was established in:',options:['1993','1999','2001','2004'],answer:1},
+  {id:112,cat:'edu',q:'WAEC was founded in:',options:['1948','1952','1956','1960'],answer:0},
+  {id:113,cat:'edu',q:'The West African Senior School Certificate (WASSC) is issued by:',options:['NECO','JAMB','WAEC','NUC'],answer:2},
+  {id:114,cat:'edu',q:'The minimum number of credits required to gain university admission in Nigeria including English and Mathematics is:',options:['3 credits','5 credits','4 credits','6 credits'],answer:1},
+  {id:115,cat:'edu',q:'Which Federal Government policy provides free education at the primary level in Nigeria?',options:['UBEC Act','FGN Free Education Policy','UPE Decree','Education for All Act'],answer:0},
+  {id:116,cat:'edu',q:'The National Board for Technical Education (NBTE) accredits:',options:['Universities','Polytechnics and technical colleges','Secondary schools','Primary schools'],answer:1},
+  {id:117,cat:'edu',q:'Federal Government Colleges in Nigeria are administered by:',options:['State governments','The Federal Ministry of Education','NUC','WAEC'],answer:1},
+  {id:118,cat:'edu',q:'The NYSC (National Youth Service Corps) scheme was established in:',options:['1967','1970','1973','1976'],answer:2},
+  {id:119,cat:'edu',q:'How many years is a standard bachelor\'s degree programme in Nigeria?',options:['3 years','4 years','4–5 years depending on course','6 years'],answer:2},
+  {id:120,cat:'edu',q:'NAPPS stands for:',options:['National Association of Primary and Post-primary Schools','National Association of Proprietors of Private Schools','National Agency for Primary and Polytechnic Schools','National Academic Performance and Progress System'],answer:1},
+  {id:121,cat:'edu',q:'The "No Child Left Behind" policy in Nigerian education refers to:',options:['Free feeding in schools','Inclusive education for children with disabilities','UBE free and compulsory education policy','Free school uniforms'],answer:2},
+  {id:122,cat:'edu',q:'Who is the current Registrar of JAMB as of 2024?',options:['Dibu Ojerinde','Ishaq Oloyede','Fabian Benjamin','Godswill Obioma'],answer:1},
+  {id:123,cat:'edu',q:'JUPEB stands for:',options:['Joint Universities Preliminary Examination Board','Junior University Preparatory Examination Board','Joint University Pre-degree Examination Board','Junior Universities Pre-entry Examinations Body'],answer:0},
+  {id:124,cat:'edu',q:'The National Mathematical Centre is located in:',options:['Lagos','Abuja','Sheda-Kwali, Abuja','Ibadan'],answer:2},
+  {id:125,cat:'edu',q:'What does "inclusive education" mean?',options:['Education that includes science and arts','Education that accommodates all learners including those with special needs','Education free of charge for all','Education that includes vocational training'],answer:1},
+  {id:126,cat:'edu',q:'The National Open University of Nigeria (NOUN) was re-established in:',options:['1995','2002','2006','2010'],answer:1},
+  {id:127,cat:'edu',q:'The School of Basic Studies (SBS) is equivalent to which level of education?',options:['Primary school','Pre-degree / A-Level','Undergraduate','Postgraduate'],answer:1},
+  {id:128,cat:'edu',q:'The SSCE (Senior Secondary Certificate Examination) is written by:',options:['JSS3 students','SS3 students','Primary 6 students','University students'],answer:1},
+  {id:129,cat:'edu',q:'Which of the following is a private examination body operating in Nigeria?',options:['JAMB','NECO','Cambridge Assessment (IGCSE)','NERDC'],answer:2},
+  {id:130,cat:'edu',q:'The Professional Diploma in Education (PDE) is awarded to:',options:['First degree holders who wish to become teachers','Secondary school graduates','Diploma holders in science','Postgraduate research students'],answer:0},
+  {id:131,cat:'edu',q:'The ratio of pupils to teacher recommended by UNESCO at primary level is:',options:['20:1','30:1','40:1','50:1'],answer:1},
+  {id:132,cat:'edu',q:'Which body funds school feeding programmes in Nigeria?',options:['UBEC','WAEC','NECO','O-MEAL (through the Office of the VP)'],answer:3},
+  {id:133,cat:'edu',q:'The Almajiri Education Programme in Nigeria targeted:',options:['Girls in Northern Nigeria','Islamic pupils who roam streets begging','University drop-outs','Children of civil servants'],answer:1},
+  {id:134,cat:'edu',q:'SUBEB stands for:',options:['State Universal Basic Education Board','State University Board of Education Budgets','Sub-regional Education Bureau','State Unified Basic Education Board'],answer:0},
+  {id:135,cat:'edu',q:'The Nigerian education system currently operates a:',options:['4-4-4-4 system','6-3-3-4 system','5-3-4-4 system','8-4-4 system'],answer:1},
+  {id:136,cat:'edu',q:'Which type of school is fully funded and managed by the Federal Government?',options:['Community schools','Unity schools (Federal Government Colleges)','Mission schools','Conventional schools'],answer:1},
+  {id:137,cat:'edu',q:'The UNESCO Education for All (EFA) goals were set to be achieved by:',options:['2010','2015','2020','2030'],answer:1},
+  {id:138,cat:'edu',q:'National Teachers\' Institute (NTI) is located in:',options:['Abuja','Lagos','Kaduna','Ibadan'],answer:2},
+  {id:139,cat:'edu',q:'The minimum entry qualification for a Postgraduate diploma in Education (PGDE) is:',options:['OND','HND','First degree (B.Sc/B.A/B.Eng)','NCE'],answer:2},
+  {id:140,cat:'edu',q:'The mandate of NEMIS (National Education Management Information System) is:',options:['To conduct external examinations','To collect and manage education data and statistics','To fund tertiary education','To supervise private schools'],answer:1},
+  {id:141,cat:'edu',q:'The distance between a pupil\'s home and school recommended for the UBE is:',options:['1 km','2 km','3 km','5 km'],answer:2},
+  {id:142,cat:'edu',q:'Which of the following is used to assess affective domain in education?',options:['Written test','Observation checklist','Multiple choice test','Essay examination'],answer:1},
+  {id:143,cat:'edu',q:'The Safe School Initiative (SSI) in Nigeria was launched in response to:',options:['Poor infrastructure','Boko Haram attacks on schools','Teacher shortage','Examination malpractice'],answer:1},
+  {id:144,cat:'edu',q:'TVET stands for:',options:['Technical and Vocational Education and Training','Teacher Verification and Evaluation Tool','Tertiary Vocational Education Team','Technical Value Education Training'],answer:0},
+  {id:145,cat:'edu',q:'Which country has the largest number of out-of-school children globally?',options:['India','Pakistan','Nigeria','Ethiopia'],answer:2},
+  {id:146,cat:'edu',q:'The Bloom\'s Taxonomy (revised) highest cognitive level is:',options:['Synthesis','Analysis','Create (Creating)','Evaluate'],answer:2},
+  {id:147,cat:'edu',q:'The JAMB UTME score required for most universities in Nigeria is a minimum of:',options:['150','160','180','200'],answer:1},
+  {id:148,cat:'edu',q:'The 2004 National Policy on Education revised the structure of Nigerian education to:',options:['9-3-4','6-6-4','6-3-3-4','4-4-4-4'],answer:2},
+  {id:149,cat:'edu',q:'The SDG goal for education (Goal 4) aims to ensure:',options:['Free tertiary education','Inclusive and equitable quality education for all','Mandatory vocational training','Equal number of male and female teachers'],answer:1},
+  {id:150,cat:'edu',q:'The Teachers Registration Council of Nigeria (TRCN) was established by which Act?',options:['Education (National Minimum Standards) Act','Teachers Registration Council of Nigeria Act 1993','TRCN Act No. 31 of 1993','National Education Act 2004'],answer:2},
+
+  // ── ICT (50) ──
+  {id:151,cat:'ict',q:'What does "CPU" stand for in computing?',options:['Central Processing Unit','Computer Personal Unit','Central Program Utility','Core Processing Unit'],answer:0},
+  {id:152,cat:'ict',q:'Which of the following is an example of an operating system?',options:['Microsoft Word','Google Chrome','Windows 11','Adobe Photoshop'],answer:2},
+  {id:153,cat:'ict',q:'What does "WWW" stand for?',options:['World Wide Web','Wide World Web','World Web Wide','Web World Wide'],answer:0},
+  {id:154,cat:'ict',q:'Which of the following is NOT a programming language?',options:['Python','Java','Linux','JavaScript'],answer:2},
+  {id:155,cat:'ict',q:'What is the full meaning of "RAM" in computers?',options:['Random Access Memory','Read Access Memory','Rapid Application Memory','Remote Access Module'],answer:0},
+  {id:156,cat:'ict',q:'Which device is used to connect a computer to the internet via a telephone line?',options:['Router','Hub','Modem','Switch'],answer:2},
+  {id:157,cat:'ict',q:'What does "PDF" stand for?',options:['Portable Document Format','Printed Document File','Public Data Format','Personal Document Folder'],answer:0},
+  {id:158,cat:'ict',q:'Which of the following is a search engine?',options:['Facebook','Twitter','Google','WhatsApp'],answer:2},
+  {id:159,cat:'ict',q:'In Microsoft Excel, what symbol is used to begin a formula?',options:['+','#','=','@'],answer:2},
+  {id:160,cat:'ict',q:'What is the storage capacity of 1 Gigabyte (GB)?',options:['1,000 Kilobytes','1,024 Megabytes','512 Megabytes','2,048 Kilobytes'],answer:1},
+  {id:161,cat:'ict',q:'What does "HTML" stand for?',options:['HyperText Markup Language','High Technology Markup Language','HyperText Making Language','High Text Markup Logic'],answer:0},
+  {id:162,cat:'ict',q:'Which of these is an input device?',options:['Monitor','Printer','Keyboard','Speaker'],answer:2},
+  {id:163,cat:'ict',q:'What does "URL" stand for?',options:['Uniform Resource Locator','Universal Resource Link','Unique Reference Location','Uniform Reference Language'],answer:0},
+  {id:164,cat:'ict',q:'The binary number system uses only:',options:['0 and 1','0, 1 and 2','0 to 7','0 to 9'],answer:0},
+  {id:165,cat:'ict',q:'Which type of storage retains data even when the computer is turned off?',options:['RAM','Cache memory','ROM','Virtual memory'],answer:2},
+  {id:166,cat:'ict',q:'What does "GUI" stand for?',options:['Graphical User Interface','General Utility Interface','Global Uniform Interface','Graphics Unified Integration'],answer:0},
+  {id:167,cat:'ict',q:'Which of the following is a cloud storage service?',options:['USB flash drive','Google Drive','Hard disk','DVD'],answer:1},
+  {id:168,cat:'ict',q:'The Internet of Things (IoT) refers to:',options:['Social media networks','Interconnected physical devices communicating over the internet','Online shopping platforms','Cloud computing services'],answer:1},
+  {id:169,cat:'ict',q:'What is "phishing" in cybersecurity?',options:['Hacking a computer network','Tricking users into revealing sensitive information via fake communications','Installing antivirus software','A type of programming language'],answer:1},
+  {id:170,cat:'ict',q:'Which company developed the Android operating system?',options:['Apple','Microsoft','Google','Samsung'],answer:2},
+  {id:171,cat:'ict',q:'What does "LAN" stand for?',options:['Large Area Network','Local Area Network','Linked Access Node','Long-range Area Node'],answer:1},
+  {id:172,cat:'ict',q:'Which programming language is primarily used for web development?',options:['C++','Java','HTML/CSS/JavaScript','Assembly'],answer:2},
+  {id:173,cat:'ict',q:'The first computer virus is generally accepted to be:',options:['ILOVEYOU','Creeper','Melissa','WannaCry'],answer:1},
+  {id:174,cat:'ict',q:'What does "SSD" stand for?',options:['Solid-State Drive','Super Storage Device','System Software Drive','Static Storage Disk'],answer:0},
+  {id:175,cat:'ict',q:'A "firewall" in computing is used to:',options:['Cool down the CPU','Block unauthorised network access','Speed up the internet','Back up data'],answer:1},
+  {id:176,cat:'ict',q:'Which of the following is NOT a web browser?',options:['Firefox','Safari','Linux','Opera'],answer:2},
+  {id:177,cat:'ict',q:'What does "AI" stand for?',options:['Automated Internet','Artificial Intelligence','Advanced Integration','Automated Input'],answer:1},
+  {id:178,cat:'ict',q:'The shortcut key for copying text in Windows is:',options:['Ctrl+V','Ctrl+X','Ctrl+C','Ctrl+Z'],answer:2},
+  {id:179,cat:'ict',q:'What does "ISP" stand for?',options:['Internet Software Provider','International Service Protocol','Internet Service Provider','Integrated Software Platform'],answer:2},
+  {id:180,cat:'ict',q:'Which of the following is an example of malware?',options:['Microsoft Word','Google Chrome','Ransomware','Zoom'],answer:2},
+  {id:181,cat:'ict',q:'How many bits make one byte?',options:['4','8','16','32'],answer:1},
+  {id:182,cat:'ict',q:'Which shortcut key is used to undo an action in Microsoft Word?',options:['Ctrl+Y','Ctrl+Z','Ctrl+U','Ctrl+A'],answer:1},
+  {id:183,cat:'ict',q:'What is "Big Data"?',options:['A very large hard drive','Extremely large and complex data sets that require special tools to process','A database software','A government data portal'],answer:1},
+  {id:184,cat:'ict',q:'Which of these is a programming concept used to repeat a block of code?',options:['Variable','Loop','Function','Array'],answer:1},
+  {id:185,cat:'ict',q:'The domain extension ".gov.ng" is used by:',options:['Nigerian businesses','Nigerian government websites','Nigerian educational institutions','Nigerian NGOs'],answer:1},
+  {id:186,cat:'ict',q:'What does "VPN" stand for?',options:['Virtual Private Network','Very Protected Node','Verified Public Network','Virtual Protocol Node'],answer:0},
+  {id:187,cat:'ict',q:'Which technology is used for contactless payments?',options:['Bluetooth','WiFi','NFC (Near Field Communication)','4G LTE'],answer:2},
+  {id:188,cat:'ict',q:'In a spreadsheet, a cell reference like "B3" refers to:',options:['Row B, Column 3','Column B, Row 3','Sheet B, Cell 3','Block B3'],answer:1},
+  {id:189,cat:'ict',q:'What does "HTTP" stand for?',options:['HyperText Transfer Protocol','High Technology Text Protocol','HyperText Technical Platform','Hyperlink Transfer Protocol'],answer:0},
+  {id:190,cat:'ict',q:'Which of the following best describes "open source" software?',options:['Software that costs nothing','Software whose source code is publicly available for anyone to view or modify','Software made only for government use','Software that requires no installation'],answer:1},
+  {id:191,cat:'ict',q:'What is the function of an "antivirus" software?',options:['Speed up the computer','Detect and remove malicious software','Connect to the internet','Manage files and folders'],answer:1},
+  {id:192,cat:'ict',q:'Which of the following is an example of an output device?',options:['Keyboard','Mouse','Scanner','Projector'],answer:3},
+  {id:193,cat:'ict',q:'The process of loading the operating system into a computer is called:',options:['Formatting','Booting','Compiling','Debugging'],answer:1},
+  {id:194,cat:'ict',q:'Blockchain technology is primarily used in:',options:['Video streaming','Cryptocurrency transactions and secure record keeping','Social media','Email services'],answer:1},
+  {id:195,cat:'ict',q:'What does "e-commerce" mean?',options:['Electronic computing','Buying and selling of goods and services over the internet','Email communication','Electronic government services'],answer:1},
+  {id:196,cat:'ict',q:'Which of the following file extensions is associated with audio files?',options:['.docx','.mp3','.xlsx','.pdf'],answer:1},
+  {id:197,cat:'ict',q:'The "cloud" in cloud computing refers to:',options:['Weather monitoring systems','Remote servers on the internet used to store and process data','A type of operating system','A wireless network protocol'],answer:1},
+  {id:198,cat:'ict',q:'Machine Learning is a subset of:',options:['Robotics','Cybersecurity','Artificial Intelligence','Database Management'],answer:2},
+  {id:199,cat:'ict',q:'Which of the following is the correct order of data sizes from smallest to largest?',options:['Bit, Byte, Kilobyte, Megabyte, Gigabyte','Byte, Bit, Megabyte, Kilobyte, Gigabyte','Kilobyte, Byte, Bit, Megabyte, Gigabyte','Bit, Kilobyte, Byte, Megabyte, Gigabyte'],answer:0},
+  {id:200,cat:'ict',q:'Nigeria\'s National Information Technology Development Agency (NITDA) was established in:',options:['1999','2001','2004','2007'],answer:1},
+
+  // ── RELIGION (50) ──
+  {id:201,cat:'religion',q:'How many books are in the Old Testament of the Christian Bible?',options:['27','39','66','46'],answer:1},
+  {id:202,cat:'religion',q:'The holy book of Islam is called:',options:['The Torah','The Bible','The Quran','The Vedas'],answer:2},
+  {id:203,cat:'religion',q:'In Islam, how many times a day are Muslims required to pray (Salat)?',options:['3','4','5','7'],answer:2},
+  {id:204,cat:'religion',q:'Which river is considered the most sacred in Hinduism?',options:['Nile','Amazon','Ganges','Yangtze'],answer:2},
+  {id:205,cat:'religion',q:'The first book of the Bible is:',options:['Exodus','Genesis','Leviticus','Numbers'],answer:1},
+  {id:206,cat:'religion',q:'In Christianity, the period of fasting and prayer before Easter is called:',options:['Advent','Pentecost','Lent','Epiphany'],answer:2},
+  {id:207,cat:'religion',q:'What is the meaning of "Islam" in Arabic?',options:['Peace','Submission','Faith','Prayer'],answer:1},
+  {id:208,cat:'religion',q:'The Hijab worn by Muslim women is primarily a symbol of:',options:['Cultural identity','Modesty and piety','Political allegiance','Social status'],answer:1},
+  {id:209,cat:'religion',q:'According to the Bible, Jesus Christ was baptised in which river?',options:['Nile','Euphrates','Jordan','Tigris'],answer:2},
+  {id:210,cat:'religion',q:'The five pillars of Islam include all of the following EXCEPT:',options:['Salat (Prayer)','Hajj (Pilgrimage)','Zakat (Almsgiving)','Jihad'],answer:3},
+  {id:211,cat:'religion',q:'How many books are in the New Testament?',options:['22','27','30','39'],answer:1},
+  {id:212,cat:'religion',q:'The Islamic calendar is based on:',options:['The solar calendar','The lunar calendar','The Gregorian calendar','The Julian calendar'],answer:1},
+  {id:213,cat:'religion',q:'Ramadan is the _____ month of the Islamic calendar:',options:['5th','7th','9th','12th'],answer:2},
+  {id:214,cat:'religion',q:'What is "Zakat" in Islam?',options:['Daily prayer','Obligatory almsgiving (charity)','Fasting during Ramadan','Pilgrimage to Mecca'],answer:1},
+  {id:215,cat:'religion',q:'The city considered holiest in Islam is:',options:['Medina','Jerusalem','Mecca','Cairo'],answer:2},
+  {id:216,cat:'religion',q:'In Christianity, the Holy Trinity consists of:',options:['God, Jesus, and Moses','Father, Son, and Holy Spirit','God, the Prophets, and the Angels','God, Mary, and Jesus'],answer:1},
+  {id:217,cat:'religion',q:'The Torah is the holy scripture of:',options:['Christianity','Islam','Judaism','Hinduism'],answer:2},
+  {id:218,cat:'religion',q:'In Islam, the pilgrimage to Mecca (Hajj) must be performed at least:',options:['Once in a lifetime if able','Every year','Every 5 years','Twice in a lifetime'],answer:0},
+  {id:219,cat:'religion',q:'What does "Eid-ul-Fitr" celebrate?',options:['The birth of Prophet Muhammad','The end of Ramadan fasting','The journey to Mecca','The revelation of the Quran'],answer:1},
+  {id:220,cat:'religion',q:'The Psalms are found in which part of the Bible?',options:['The New Testament','The Apocrypha','The Old Testament','The Epistles'],answer:2},
+  {id:221,cat:'religion',q:'The Anglican Church in Nigeria is known as:',options:['Catholic Church of Nigeria','Church of Nigeria (Anglican Communion)','Redeemed Christian Church','Living Faith Church'],answer:1},
+  {id:222,cat:'religion',q:'In Christianity, Pentecost Sunday celebrates:',options:['The resurrection of Jesus','The birth of Jesus','The descent of the Holy Spirit on the Apostles','The baptism of Jesus'],answer:2},
+  {id:223,cat:'religion',q:'How many chapters (Surahs) are in the Quran?',options:['99','100','114','120'],answer:2},
+  {id:224,cat:'religion',q:'Who is considered the founder of Buddhism?',options:['Confucius','Siddhartha Gautama','Laozi','Mahavira'],answer:1},
+  {id:225,cat:'religion',q:'The Sabbath day in Judaism is observed on:',options:['Sunday','Friday','Saturday','Thursday'],answer:2},
+  {id:226,cat:'religion',q:'What is the name of the Muslim call to prayer?',options:['Khutbah','Adhan','Salah','Tasbih'],answer:1},
+  {id:227,cat:'religion',q:'In the Bible, which book immediately follows Genesis?',options:['Leviticus','Numbers','Deuteronomy','Exodus'],answer:3},
+  {id:228,cat:'religion',q:'The CAN (Christian Association of Nigeria) was founded in:',options:['1960','1976','1984','1990'],answer:1},
+  {id:229,cat:'religion',q:'What does "Eid-ul-Adha" commemorate?',options:["Abraham's willingness to sacrifice his son",'The end of Ramadan','The birth of Prophet Muhammad','The night of power'],answer:0},
+  {id:230,cat:'religion',q:'The Jumu\'ah in Islam refers to:',options:['Friday congregational prayer','The pilgrimage to Mecca','Monthly charity payment','Nightly prayer during Ramadan'],answer:0},
+  {id:231,cat:'religion',q:'Which Nigerian governor introduced Sharia law in Zamfara State in 1999?',options:['Attahiru Bafarawa','Ahmad Sani Yerima','Abdullahi Ganduje','Bello Matawalle'],answer:1},
+  {id:232,cat:'religion',q:'In Yoruba traditional religion, the supreme deity is called:',options:['Sango','Ogun','Olodumare','Obatala'],answer:2},
+  {id:233,cat:'religion',q:'The CRK subject in Nigerian schools stands for:',options:['Christian Religion and Knowledge','Christian Religious Knowledge','Christ Revealed Knowledge','Christian Revelation and Knowledge'],answer:1},
+  {id:234,cat:'religion',q:'In Igbo traditional religion, the creator God is called:',options:['Amadioha','Ala','Chukwu','Ikenga'],answer:2},
+  {id:235,cat:'religion',q:'The Rosary is associated with which denomination of Christianity?',options:['Protestantism','Catholicism','Pentecostalism','Anglicanism'],answer:1},
+  {id:236,cat:'religion',q:'In Islam, "Tawhid" means:',options:['Pilgrimage','Prayer','The oneness of God','Fasting'],answer:2},
+  {id:237,cat:'religion',q:'Which prophet is shared and honoured by Christianity, Islam, and Judaism?',options:['Moses','Elijah','John','Paul'],answer:0},
+  {id:238,cat:'religion',q:'The Islamic Studies subject in Nigerian schools is also known as:',options:['IRS','ISS','IRK (Islamic Religious Knowledge)','IRS (Islamic Religion Studies)'],answer:2},
+  {id:239,cat:'religion',q:'The "Sermon on the Mount" was delivered by:',options:['Moses','Paul','Jesus Christ','Peter'],answer:2},
+  {id:240,cat:'religion',q:'What is "Taqwa" in Islam?',options:['Prayer beads','Mindfulness and fear of God / piety','The Quran recitation','The pilgrimage'],answer:1},
+  {id:241,cat:'religion',q:'The Hausa traditional religion\'s high god is called:',options:['Magiro','Bori','Ubangiji','Sarkin Ruwa'],answer:2},
+  {id:242,cat:'religion',q:'What does "RCCG" stand for?',options:['Redeemed Christian Church of God','Reformed Christian Community of God','Regenerated Christian Church of God','Renewed Christ Church of God'],answer:0},
+  {id:243,cat:'religion',q:'In Islam, the direction Muslims face during prayer (toward Mecca) is called:',options:['Qiblah','Masjid','Minaret','Mihrab'],answer:0},
+  {id:244,cat:'religion',q:'The Ecumenical movement aims to:',options:['Promote Islam globally','Unite all Christian denominations','Eliminate traditional religions','Promote interfaith conflict'],answer:1},
+  {id:245,cat:'religion',q:'Which Nigerian state has a significant Christian and Muslim population and is known for religious tension?',options:['Kwara','Kaduna','Imo','Oyo'],answer:1},
+  {id:246,cat:'religion',q:'In Judaism, the weekly Sabbath begins at:',options:['Friday morning','Friday sunset','Saturday morning','Saturday sunset'],answer:1},
+  {id:247,cat:'religion',q:'Who wrote most of the Epistles in the New Testament?',options:['Peter','John','Paul','James'],answer:2},
+  {id:248,cat:'religion',q:'The Confucian philosophy originated in:',options:['Japan','India','China','Korea'],answer:2},
+  {id:249,cat:'religion',q:'In the Nigerian context, "Ifa" divination is associated with:',options:['Hausa/Fulani culture','Igbo culture','Yoruba culture','Tiv culture'],answer:2},
+  {id:250,cat:'religion',q:'The word "gospel" literally means:',options:['Holy word','Good news','Sacred teaching','The commandments'],answer:1},
+
+  // ── COMMON ENTRANCE (50) ──
+  {id:251,cat:'entrance',q:'What is the capital city of Nigeria?',options:['Lagos','Kano','Abuja','Ibadan'],answer:2},
+  {id:252,cat:'entrance',q:'Which river is the longest in Nigeria?',options:['Benue River','Niger River','Kaduna River','Cross River'],answer:1},
+  {id:253,cat:'entrance',q:'What is 15% of 200?',options:['20','25','30','35'],answer:2},
+  {id:254,cat:'entrance',q:'Which of the following is a mammal?',options:['Crocodile','Eagle','Whale','Tilapia'],answer:2},
+  {id:255,cat:'entrance',q:'How many sides does a hexagon have?',options:['5','6','7','8'],answer:1},
+  {id:256,cat:'entrance',q:'What is the plural of "child"?',options:['Childs','Childrens','Children','Child'],answer:2},
+  {id:257,cat:'entrance',q:'The process by which plants make their own food using sunlight is called:',options:['Respiration','Photosynthesis','Digestion','Transpiration'],answer:1},
+  {id:258,cat:'entrance',q:'Which planet is closest to the Sun?',options:['Venus','Earth','Mars','Mercury'],answer:3},
+  {id:259,cat:'entrance',q:'What is the sum of angles in a triangle?',options:['90°','120°','180°','360°'],answer:2},
+  {id:260,cat:'entrance',q:'Who wrote the Nigerian national anthem "Arise O Compatriots"?',options:['Wole Soyinka','A committee of Nigerians','Chinua Achebe','John Okafor'],answer:1},
+  {id:261,cat:'entrance',q:'How many states are in Nigeria?',options:['30','34','36','38'],answer:2},
+  {id:262,cat:'entrance',q:'What is the largest ocean in the world?',options:['Atlantic Ocean','Indian Ocean','Arctic Ocean','Pacific Ocean'],answer:3},
+  {id:263,cat:'entrance',q:'Which of these is NOT a primary colour?',options:['Red','Blue','Green','Yellow'],answer:3},
+  {id:264,cat:'entrance',q:'What gas do plants absorb from the atmosphere during photosynthesis?',options:['Oxygen','Nitrogen','Carbon dioxide','Hydrogen'],answer:2},
+  {id:265,cat:'entrance',q:'Nigeria gained independence in:',options:['1957','1960','1963','1966'],answer:1},
+  {id:266,cat:'entrance',q:'The simple past tense of "go" is:',options:['Goed','Gone','Went','Goes'],answer:2},
+  {id:267,cat:'entrance',q:'What is 144 ÷ 12?',options:['10','11','12','13'],answer:2},
+  {id:268,cat:'entrance',q:'Which organ pumps blood around the body?',options:['Liver','Lungs','Kidney','Heart'],answer:3},
+  {id:269,cat:'entrance',q:'The adjective form of "beauty" is:',options:['Beautify','Beautiful','Beautifully','Beauteous'],answer:1},
+  {id:270,cat:'entrance',q:'Which continent is Nigeria located in?',options:['Asia','Europe','Africa','South America'],answer:2},
+  {id:271,cat:'entrance',q:'What is the boiling point of water at sea level?',options:['90°C','95°C','100°C','110°C'],answer:2},
+  {id:272,cat:'entrance',q:'Which of these is a conjunction?',options:['Quickly','Beautiful','Because','Table'],answer:2},
+  {id:273,cat:'entrance',q:'How many minutes are in 3 hours?',options:['150','160','180','200'],answer:2},
+  {id:274,cat:'entrance',q:'The national currency of Nigeria is the:',options:['Dollar','Pound','Naira','Cedi'],answer:2},
+  {id:275,cat:'entrance',q:'Which of the following is a reptile?',options:['Frog','Bat','Tortoise','Salmon'],answer:2},
+  {id:276,cat:'entrance',q:'What does H₂O represent?',options:['Hydrogen peroxide','Salt water','Water','Carbon dioxide'],answer:2},
+  {id:277,cat:'entrance',q:'Which of these numbers is a prime number?',options:['9','15','17','21'],answer:2},
+  {id:278,cat:'entrance',q:'The antonym of "ancient" is:',options:['Old','Modern','Broken','Small'],answer:1},
+  {id:279,cat:'entrance',q:'What is the capital of Ogun State?',options:['Sagamu','Ijebu-Ode','Abeokuta','Ilaro'],answer:2},
+  {id:280,cat:'entrance',q:'Which part of a plant absorbs water and minerals from the soil?',options:['Leaves','Stem','Root','Flower'],answer:2},
+  {id:281,cat:'entrance',q:'What is 23 × 4?',options:['82','88','92','96'],answer:2},
+  {id:282,cat:'entrance',q:'Which of these is a vowel?',options:['B','T','E','K'],answer:2},
+  {id:283,cat:'entrance',q:'The River Niger enters Nigeria from which country?',options:['Cameroon','Benin Republic','Guinea','Mali'],answer:1},
+  {id:284,cat:'entrance',q:'A baby dog is called a:',options:['Calf','Kid','Cub','Puppy'],answer:3},
+  {id:285,cat:'entrance',q:'Which of the following is NOT a sense organ?',options:['Eye','Ear','Nose','Stomach'],answer:3},
+  {id:286,cat:'entrance',q:'The correct spelling is:',options:['Recieve','Receive','Recive','Receieve'],answer:1},
+  {id:287,cat:'entrance',q:'How many grams are in 1 kilogram?',options:['100','500','1000','10000'],answer:2},
+  {id:288,cat:'entrance',q:'Who was Nigeria\'s first Head of State?',options:['Yakubu Gowon','Nnamdi Azikiwe','Aguiyi-Ironsi','Obafemi Awolowo'],answer:2},
+  {id:289,cat:'entrance',q:'What does LCM stand for in Mathematics?',options:['Longest Common Multiple','Least Common Multiple','Largest Common Multiple','Lowest Common Mean'],answer:1},
+  {id:290,cat:'entrance',q:'Which city is known as the commercial capital of Nigeria?',options:['Abuja','Port Harcourt','Kano','Lagos'],answer:3},
+  {id:291,cat:'entrance',q:'A triangle with all three sides equal is called:',options:['Scalene','Isosceles','Equilateral','Right-angled'],answer:2},
+  {id:292,cat:'entrance',q:'The synonym of "courageous" is:',options:['Afraid','Brave','Quiet','Weak'],answer:1},
+  {id:293,cat:'entrance',q:'How many seconds are in one minute?',options:['30','60','90','100'],answer:1},
+  {id:294,cat:'entrance',q:'Which of these is a natural disaster?',options:['Building collapse','Flood','Road accident','Fire outbreak'],answer:1},
+  {id:295,cat:'entrance',q:'The plural of "tooth" is:',options:['Tooths','Teeths','Teeth','Toothes'],answer:2},
+  {id:296,cat:'entrance',q:'What is the square root of 81?',options:['7','8','9','10'],answer:2},
+  {id:297,cat:'entrance',q:'Which Nigerian president introduced the "War Against Indiscipline" (WAI)?',options:['Olusegun Obasanjo','Ibrahim Babangida','Muhammadu Buhari','Ernest Shonekan'],answer:2},
+  {id:298,cat:'entrance',q:'The word "the" is an example of which part of speech?',options:['Pronoun','Adjective','Article','Preposition'],answer:2},
+  {id:299,cat:'entrance',q:'What is the area of a rectangle with length 8cm and width 5cm?',options:['26cm²','30cm²','40cm²','13cm²'],answer:2},
+  {id:300,cat:'entrance',q:'Which of these animals is nocturnal (active at night)?',options:['Eagle','Butterfly','Owl','Lizard'],answer:2}
+];
+
+// ══════════════════════════════════════════════════
+//  INIT SUPABASE
+// ══════════════════════════════════════════════════
+let sbClient = null;
+let isOnline = false;
+
+function initSupabase() {
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+    console.warn('Supabase not configured — running offline.');
+    return false;
+  }
+  try {
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    isOnline = true;
+    return true;
+  } catch(e) {
+    console.error('Supabase init failed:', e);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+let QUESTIONS = [];
+let shuffledQuestions = [];
+let currentIndex = 0;
+let timerInterval = null;
+let timeLeft = 25 * 60;
+let userAnswers = [];
+let shuffledOptions = [];
+let failedAttempts = 0;
+let isLockedOut = false;
+let participant = {};
+let sessionId = null;
+let selectedCategory = null;
+let unlockedCategory = null; // set by access code — locks the user to this category
+
+// Category-keyed access codes (fallback if Supabase not configured)
+const ACCESS_CODE_MAP = {
+  civil:    ['CIVIL2025'],
+  affairs:  ['AFFAIRS2025'],
+  edu:      ['EDU2025'],
+  ict:      ['ICT2025'],
+  religion: ['RELIGION2025'],
+  entrance: ['ENTRANCE2025']
+};
+
+// ══════════════════════════════════════════════════
+//  BOOTSTRAP
+// ══════════════════════════════════════════════════
+async function init() {
+  document.getElementById('loading-overlay').classList.remove('hidden');
+  const ok = initSupabase();
+  if (ok) {
+    await Promise.all([loadQuestions(), loadAccessCodes()]);
+    refreshCategoryCountsIfVisible();
+    setupQuestionRealtime();
+  } else {
+    QUESTIONS = FALLBACK_QUESTIONS;
+    document.getElementById('config-notice').classList.add('show');
+  }
+  document.getElementById('loading-overlay').classList.add('hidden');
+  showScreen('screen-lock');
+}
+
+async function loadQuestions() {
+  try {
+    const { data, error } = await sbClient
+      .from('questions')
+      .select('*')
+      .eq('active', true)
+      .order('category')
+      .order('id');
+    if (error) throw error;
+    if (data && data.length > 0) {
+      QUESTIONS = data.map(r => ({
+        id: r.id,
+        cat: r.category,
+        q: r.question,
+        options: [r.option_a, r.option_b, r.option_c, r.option_d],
+        answer: r.correct_answer
+      }));
+    } else {
+      QUESTIONS = FALLBACK_QUESTIONS;
+    }
+  } catch(e) {
+    console.error('Failed to load questions:', e);
+    QUESTIONS = FALLBACK_QUESTIONS;
+  }
+}
+
+async function loadAccessCodes() {
+  try {
+    const { data, error } = await sbClient
+      .from('access_codes')
+      .select('code, category')
+      .eq('active', true);
+    if (error) throw error;
+    if (data && data.length > 0) {
+      // Reset the map then populate from DB
+      Object.keys(ACCESS_CODE_MAP).forEach(k => ACCESS_CODE_MAP[k] = []);
+      data.forEach(r => {
+        const cat = r.category;
+        const code = r.code.toUpperCase();
+        if (cat && ACCESS_CODE_MAP[cat]) {
+          ACCESS_CODE_MAP[cat].push(code);
+        }
+      });
+    }
+  } catch(e) {
+    console.warn('Could not load access codes, using defaults.');
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  LOCK SCREEN
+// ══════════════════════════════════════════════════
+function checkCode() {
+  if (isLockedOut) return;
+  const val = document.getElementById('code-input').value.trim().toUpperCase();
+
+  // Find which category this code belongs to
+  let matchedCategory = null;
+  for (const [cat, codes] of Object.entries(ACCESS_CODE_MAP)) {
+    if (codes.includes(val)) { matchedCategory = cat; break; }
+  }
+
+  if (matchedCategory) {
+    // Lock user to their category — pre-select and disable others
+    unlockedCategory = matchedCategory;
+    selectedCategory = matchedCategory;
+    document.getElementById('header-right').textContent = '✅ Access Granted';
+
+    // Pre-select and lock category cards on registration screen
+    const catMeta = {
+      civil:    { label:'Civil Service Rules', emoji:'📋' },
+      affairs:  { label:'Current Affairs',      emoji:'🌍' },
+      edu:      { label:'Education',             emoji:'🎓' },
+      ict:      { label:'ICT',                   emoji:'💻' },
+      religion: { label:'Religion',              emoji:'🕌' },
+      entrance: { label:'Common Entrance',       emoji:'📝' }
+    };
+    const cm = catMeta[matchedCategory];
+    // Update the lock screen sub-text to hint the category
+    document.getElementById('lock-access-hint').textContent =
+      `${cm.emoji} Code accepted — ${cm.label} exam unlocked.`;
+    document.getElementById('lock-access-hint').style.display = 'block';
+
+    setTimeout(() => {
+      showScreen('screen-register');
+      prepareRegistrationScreen();
+    }, 600);
+  } else {
+    failedAttempts++;
+    const input = document.getElementById('code-input');
+    input.value = '';
+    input.classList.add('error');
+    setTimeout(() => input.classList.remove('error'), 500);
+    const remaining = 5 - failedAttempts;
+    document.getElementById('lock-error').classList.add('show');
+    if (remaining <= 0) {
+      isLockedOut = true;
+      input.disabled = true;
+      document.querySelector('#screen-lock .btn-gold').disabled = true;
+      document.getElementById('lockout-msg').classList.add('show');
+      document.getElementById('lock-error').classList.remove('show');
+      document.getElementById('attempts-left').textContent = '';
+    } else {
+      document.getElementById('attempts-left').textContent = `${remaining} attempt${remaining>1?'s':''} remaining`;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  CATEGORY SELECTION
+// ══════════════════════════════════════════════════
+function selectCategory(cat) {
+  if (unlockedCategory && cat !== unlockedCategory) return;
+  selectedCategory = cat;
+  document.querySelectorAll('.cat-select-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.cat === cat);
+  });
+  document.getElementById('cat-select-error').classList.remove('show');
+}
+
+function prepareRegistrationScreen() {
+  if (!unlockedCategory) return;
+  // Auto-select the unlocked category
+  selectedCategory = unlockedCategory;
+  document.querySelectorAll('.cat-select-card').forEach(card => {
+    const isMatch = card.dataset.cat === unlockedCategory;
+    card.classList.toggle('selected', isMatch);
+    if (!isMatch) {
+      // Dim and disable non-matching cards
+      card.style.opacity = '0.3';
+      card.style.pointerEvents = 'none';
+      card.style.cursor = 'not-allowed';
+    } else {
+      card.style.opacity = '1';
+      card.style.pointerEvents = 'none'; // locked — can't deselect either
+      card.title = 'Category locked by your access code';
+    }
+  });
+  // Show a locked banner above the grid
+  const lockBanner = document.getElementById('cat-lock-banner');
+  if (lockBanner) {
+    const catLabels = {
+      civil: 'Civil Service Rules', affairs: 'Current Affairs',
+      edu: 'Education', ict: 'ICT',
+      religion: 'Religion', entrance: 'Common Entrance'
+    };
+    lockBanner.textContent = `🔒 Your access code has locked you into: ${catLabels[unlockedCategory]}`;
+    lockBanner.style.display = 'block';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  REGISTRATION
+// ══════════════════════════════════════════════════
+async function submitRegistration() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const org = document.getElementById('reg-org').value.trim();
+
+  if (!name) { alert('Please enter your full name.'); return; }
+  if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+  if (!selectedCategory) {
+    document.getElementById('cat-select-error').classList.add('show');
+    document.getElementById('cat-select-grid').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  participant = { name, email, phone, org, category: selectedCategory };
+
+  // Build welcome screen to reflect chosen category
+  const catMeta = {
+    civil:   { label:'Civil Service Rules',  emoji:'📋', color:'var(--civil)',    count: QUESTIONS.filter(q=>q.cat==='civil').length },
+    affairs: { label:'Current Affairs',       emoji:'🌍', color:'var(--affairs)', count: QUESTIONS.filter(q=>q.cat==='affairs').length },
+    edu:     { label:'Education',             emoji:'🎓', color:'var(--edu)',      count: QUESTIONS.filter(q=>q.cat==='edu').length },
+    ict:     { label:'ICT',                   emoji:'💻', color:'var(--ict)',      count: QUESTIONS.filter(q=>q.cat==='ict').length },
+    religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', count: QUESTIONS.filter(q=>q.cat==='religion').length },
+    entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', count: QUESTIONS.filter(q=>q.cat==='entrance').length },
+  };
+  const cm = catMeta[selectedCategory];
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+  document.getElementById('participant-info').innerHTML = `
+    <div class="participant-card">
+      <div class="av">${initials}</div>
+      <div><strong>${name}</strong><br><span style="color:var(--muted);font-size:12px;">${org || email}</span></div>
+    </div>`;
+
+  document.getElementById('exam-description').textContent =
+    `You have selected: ${cm.emoji} ${cm.label}. Answer all ${cm.count} questions within 25 minutes.`;
+
+  document.getElementById('meta-qcount').textContent = cm.count;
+  document.getElementById('meta-qcount').style.color = cm.color;
+
+  // Update category tags to show only selected
+  document.getElementById('welcome-cat-tags').innerHTML =
+    `<div class="tag ${selectedCategory}">${cm.emoji} ${cm.label} — ${cm.count} Qs</div>`;
+
+  showScreen('screen-welcome');
+}
+
+// ══════════════════════════════════════════════════
+//  EXAM
+// ══════════════════════════════════════════════════
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startExam() {
+  // Filter to only selected category's questions
+  const pool = QUESTIONS.filter(q => q.cat === selectedCategory);
+  shuffledQuestions = shuffle(pool);
+  userAnswers = new Array(shuffledQuestions.length).fill(null);
+  shuffledOptions = shuffledQuestions.map(q => shuffle(q.options.map((text,i)=>({text,origIndex:i}))));
+  currentIndex = 0;
+  sessionId = null;
+  showScreen('screen-quiz');
+  document.getElementById('header-right').textContent = '📝 Exam in Progress';
+  startTimer();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = shuffledQuestions[currentIndex];
+  const total = shuffledQuestions.length;
+  document.getElementById('q-num').textContent = currentIndex + 1;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-bar').style.width = ((currentIndex/total)*100)+'%';
+  const labels={civil:'Civil Service',affairs:'Current Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance'};
+  const pill = document.getElementById('cat-pill');
+  pill.textContent = labels[q.cat];
+  pill.className = 'category-pill ' + q.cat;
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  shuffledOptions[currentIndex].forEach((opt,i) => {
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.dataset.origIndex = opt.origIndex;
+    div.innerHTML = `<div class="opt-letter">${['A','B','C','D'][i]}</div><span>${opt.text}</span>`;
+    div.onclick = () => selectOption(div, opt.origIndex);
+    container.appendChild(div);
+  });
+  const btn = document.getElementById('btn-next');
+  btn.classList.remove('active');
+  btn.textContent = currentIndex === total-1 ? 'Finish Exam →' : 'Next Question →';
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 25*60;
+  updateTimerUI();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft<=0){clearInterval(timerInterval);showSummary();}
+  },1000);
+}
+
+function updateTimerUI() {
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el=document.getElementById('global-timer');
+  el.classList.remove('warn','danger');
+  if(timeLeft<=60) el.classList.add('danger');
+  else if(timeLeft<=300) el.classList.add('warn');
+}
+
+function selectOption(el, origIndex) {
+  if(el.classList.contains('disabled')) return;
+  if(userAnswers[currentIndex]!==null) return;
+  userAnswers[currentIndex] = origIndex;
+  document.querySelectorAll('.opt').forEach(o=>{
+    o.classList.add('disabled');
+    if(o===el) o.classList.add('selected');
+  });
+  document.getElementById('btn-next').classList.add('active');
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if(currentIndex>=shuffledQuestions.length) showSummary();
+  else renderQuestion();
+}
+
+// ══════════════════════════════════════════════════
+//  SUMMARY + SAVE TO SUPABASE
+// ══════════════════════════════════════════════════
+async function showSummary() {
+  clearInterval(timerInterval);
+  showScreen('screen-summary');
+  document.getElementById('header-right').textContent = '✅ Exam Complete';
+  document.getElementById('result-date').textContent = new Date().toLocaleString('en-NG',{dateStyle:'medium',timeStyle:'short'});
+  document.getElementById('score-total').textContent = shuffledQuestions.length;
+
+  let correct=0,wrong=0,skipped=0;
+  const catScores={civil:0,affairs:0,edu:0,ict:0,religion:0,entrance:0};
+  const catTotals={civil:0,affairs:0,edu:0,ict:0,religion:0,entrance:0};
+
+  shuffledQuestions.forEach((q,i)=>{
+    catTotals[q.cat]++;
+    const ua=userAnswers[i];
+    if(ua===null){skipped++;}
+    else if(ua===q.answer){correct++;catScores[q.cat]++;}
+    else{wrong++;}
+  });
+
+  document.getElementById('score-num').textContent=correct;
+  document.getElementById('st-correct').textContent=correct;
+  document.getElementById('st-wrong').textContent=wrong;
+  document.getElementById('st-skipped').textContent=skipped;
+
+  const pct=correct/shuffledQuestions.length;
+  const ring=document.getElementById('ring-fill');
+  ring.style.stroke=pct>=0.7?'var(--green)':pct>=0.5?'var(--gold)':'var(--red)';
+  setTimeout(()=>ring.style.strokeDashoffset=377*(1-pct),100);
+
+  const grade=pct>=0.8?['Distinction ★','Excellent! Outstanding performance.','var(--green)']:
+              pct>=0.65?['Credit ✓','Good performance. Keep it up!','var(--gold)']:
+              pct>=0.5?['Pass ✓','You passed. Review missed questions.','var(--gold)']:
+              ['Fail ✗','Keep studying. You can do better!','var(--red)'];
+  const gb=document.getElementById('grade-badge');
+  gb.textContent=grade[0];
+  gb.style.cssText+=`;background:${grade[2]}20;color:${grade[2]};border:1px solid ${grade[2]}50;`;
+  document.getElementById('grade-msg').textContent=grade[1];
+
+  Object.entries(catScores).forEach(([c,sc])=>{
+    const tot=catTotals[c];
+    const cbEl = document.getElementById('cb-'+c);
+    const cbarEl = document.getElementById('cbar-'+c);
+    const rowEl = cbarEl ? cbarEl.closest('.cat-row') : null;
+    if(rowEl) rowEl.style.display = tot > 0 ? 'block' : 'none';
+    if(cbEl) cbEl.textContent=sc+'/'+(tot||'?');
+    setTimeout(()=>{if(tot && cbarEl) cbarEl.style.width=((sc/tot)*100)+'%';},300);
+  });
+
+  buildReview();
+
+  // Save to Supabase
+  if(isOnline && sbClient) {
+    await saveResult({correct,wrong,skipped,pct,grade:grade[0],catScores,catTotals});
+  }
+}
+
+async function saveResult({correct,wrong,skipped,pct,grade,catScores,catTotals}) {
+  const si = document.getElementById('save-indicator');
+  si.textContent = '⏳ Saving results…';
+  si.className = 'save-indicator saving';
+  try {
+    const answers_detail = shuffledQuestions.map((q,i)=>({
+      question_id: q.id,
+      question: q.q,
+      category: q.cat,
+      user_answer: userAnswers[i]!==null ? q.options[userAnswers[i]] : null,
+      correct_answer: q.options[q.answer],
+      is_correct: userAnswers[i]===q.answer,
+      skipped: userAnswers[i]===null
+    }));
+
+    const { data, error } = await sbClient.from('exam_results').insert({
+      name: participant.name,
+      email: participant.email,
+      phone: participant.phone || null,
+      organisation: participant.org || null,
+      selected_category: selectedCategory,
+      score: correct,
+      total: shuffledQuestions.length,
+      percentage: Math.round(pct*100),
+      grade,
+      correct_count: correct,
+      wrong_count: wrong,
+      skipped_count: skipped,
+      civil_score: catScores.civil,
+      affairs_score: catScores.affairs,
+      edu_score: catScores.edu,
+      ict_score: catScores.ict,
+      religion_score: catScores.religion,
+      entrance_score: catScores.entrance,
+      answers_detail: answers_detail,
+      time_taken_secs: (25*60) - timeLeft,
+      taken_at: new Date().toISOString()
+    }).select().single();
+
+    if(error) throw error;
+    sessionId = data.id;
+    si.textContent = '✅ Results saved successfully';
+    si.className = 'save-indicator saved';
+  } catch(e) {
+    console.error('Save failed:', e);
+    si.textContent = '⚠ Could not save results — check connection';
+    si.className = 'save-indicator';
+    si.style.color = 'var(--red)';
+  }
+}
+
+function buildReview() {
+  const container=document.getElementById('review-container');
+  container.innerHTML='';
+  const catLabels={civil:'📋 Civil Service Rules',affairs:'🌍 Current Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Common Entrance'};
+  ['civil','affairs','edu','ict','religion','entrance'].forEach(cat=>{
+    const qs=shuffledQuestions.map((q,i)=>({q,i})).filter(({q})=>q.cat===cat);
+    if(!qs.length) return;
+    const title=document.createElement('div');
+    title.className='section-title';title.textContent=catLabels[cat];
+    container.appendChild(title);
+    qs.forEach(({q,i})=>{
+      const ua=userAnswers[i];
+      const isCorrect=ua!==null&&ua===q.answer;
+      const isSkipped=ua===null;
+      const card=document.createElement('div');
+      card.className='review-card '+(isCorrect?'correct-card':isSkipped?'skipped-card':'wrong-card');
+      const badge=isCorrect?'<span class="rv-badge c">Correct</span>':isSkipped?'<span class="rv-badge s">Skipped</span>':'<span class="rv-badge w">Wrong</span>';
+      let aHtml=`<div class="rv-ans correct-ans"><span>✓</span> Correct: ${q.options[q.answer]}</div>`;
+      if(!isCorrect&&!isSkipped) aHtml+=`<div class="rv-ans wrong-ans"><span>✗</span> Your answer: ${q.options[ua]}</div>`;
+      if(isSkipped) aHtml+=`<div class="rv-ans" style="background:#FFB80010;color:var(--gold)"><span>–</span> Not answered</div>`;
+      card.innerHTML=`<div class="rv-header"><div class="rv-q">${q.q}</div>${badge}</div><div class="rv-answers">${aHtml}</div>`;
+      container.appendChild(card);
+    });
+  });
+}
+
+function restartExam() {
+  failedAttempts=0;isLockedOut=false;participant={};selectedCategory=null;unlockedCategory=null;
+  // Restore all category cards
+  document.querySelectorAll('.cat-select-card').forEach(c=>{
+    c.classList.remove('selected');
+    c.style.opacity='';c.style.pointerEvents='';c.style.cursor='';c.title='';
+  });
+  const lockBanner = document.getElementById('cat-lock-banner');
+  if(lockBanner){ lockBanner.style.display='none'; lockBanner.textContent=''; }
+  const hint = document.getElementById('lock-access-hint');
+  if(hint){ hint.style.display='none'; hint.textContent=''; }
+  document.getElementById('code-input').disabled=false;
+  document.getElementById('code-input').value='';
+  const btn=document.querySelector('#screen-lock .btn-gold');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+  document.getElementById('lock-error').classList.remove('show');
+  document.getElementById('lockout-msg').classList.remove('show');
+  document.getElementById('attempts-left').textContent='';
+  document.getElementById('header-right').textContent='🔒 Access Required';
+  document.getElementById('reg-name').value='';
+  document.getElementById('reg-email').value='';
+  document.getElementById('reg-phone').value='';
+  document.getElementById('reg-org').value='';
+  showScreen('screen-lock');
+}
+
+function showConfigHelp() {
+  alert('Setup Guide:\n\n1. Go to supabase.com → Create free account\n2. Create a new project\n3. Run the SQL in setup.sql to create tables\n4. Copy your Project URL and anon key\n5. Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY in index.html\n\nSee SETUP.md for detailed instructions.');
+}
+
+// ══════════════════════════════════════════════════
+//  REALTIME QUESTION SYNC
+//  Keeps QUESTIONS in sync with admin additions/edits
+// ══════════════════════════════════════════════════
+function setupQuestionRealtime() {
+  if (!sbClient || !isOnline) return;
+  sbClient.channel('question-sync')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'questions' }, payload => {
+      const q = payload.new;
+      if (!q.active) return;
+      // Avoid duplicates
+      if (!QUESTIONS.find(x => x.id === q.id)) {
+        QUESTIONS.push({ id:q.id, cat:q.category, q:q.question,
+          options:[q.option_a,q.option_b,q.option_c,q.option_d], answer:q.correct_answer });
+      }
+      refreshCategoryCountsIfVisible();
+    })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'questions' }, payload => {
+      const q = payload.new;
+      const idx = QUESTIONS.findIndex(x => x.id === q.id);
+      const mapped = { id:q.id, cat:q.category, q:q.question,
+        options:[q.option_a,q.option_b,q.option_c,q.option_d], answer:q.correct_answer };
+      if (q.active) {
+        if (idx !== -1) QUESTIONS[idx] = mapped;
+        else QUESTIONS.push(mapped);
+      } else {
+        if (idx !== -1) QUESTIONS.splice(idx, 1);
+      }
+      refreshCategoryCountsIfVisible();
+    })
+    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'questions' }, payload => {
+      QUESTIONS = QUESTIONS.filter(x => x.id !== payload.old.id);
+      refreshCategoryCountsIfVisible();
+    })
+    .subscribe();
+}
+
+// Refresh all visible question counts whenever QUESTIONS array changes
+function refreshCategoryCountsIfVisible() {
+  // 1. Update ALL registration screen category cards
+  const cats = ['civil','affairs','edu','ict','religion','entrance'];
+  cats.forEach(cat => {
+    const card = document.querySelector(`.cat-select-card[data-cat="${cat}"] .csc-count`);
+    if (card) {
+      const n = QUESTIONS.filter(q => q.cat === cat).length;
+      card.textContent = `${n} Question${n !== 1 ? 's' : ''}`;
+    }
+  });
+
+  // 2. Update welcome screen (only if a category is already selected)
+  if (!selectedCategory) return;
+  const count = QUESTIONS.filter(q => q.cat === selectedCategory).length;
+  const metaEl = document.getElementById('meta-qcount');
+  if (metaEl) metaEl.textContent = count;
+  const tagEl = document.getElementById('welcome-cat-tags');
+  if (tagEl && tagEl.querySelector('.tag')) {
+    const catMeta = {
+      civil:'📋 Civil Service Rules', affairs:'🌍 Current Affairs', edu:'🎓 Education',
+      ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance'
+    };
+    tagEl.innerHTML = `<div class="tag ${selectedCategory}">${catMeta[selectedCategory]||selectedCategory} — ${count} Qs</div>`;
+  }
+  const descEl = document.getElementById('exam-description');
+  if (descEl && descEl.textContent.includes('Answer all')) {
+    const catMeta2 = {
+      civil:{label:'Civil Service Rules',emoji:'📋'}, affairs:{label:'Current Affairs',emoji:'🌍'},
+      edu:{label:'Education',emoji:'🎓'}, ict:{label:'ICT',emoji:'💻'},
+      religion:{label:'Religion',emoji:'🕌'}, entrance:{label:'Common Entrance',emoji:'📝'}
+    };
+    const cm = catMeta2[selectedCategory];
+    if (cm) descEl.textContent = `You have selected: ${cm.emoji} ${cm.label}. Answer all ${count} questions within 25 minutes.`;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
