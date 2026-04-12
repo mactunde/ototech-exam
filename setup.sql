@@ -1,14 +1,14 @@
-﻿-- ══════════════════════════════════════════════
+-- ══════════════════════════════════════════════
 --  OTOTECH ONLINE QUESTIONS MANAGEMENT SYSTEM — SUPABASE SETUP SQL
 --  Run this in: Supabase → SQL Editor → New Query
---  300 questions: 50 per category × 6 categories
+--  300 questions: 50 per category × 7 categories
 -- ══════════════════════════════════════════════
 
 -- 1. QUESTIONS TABLE
 CREATE TABLE IF NOT EXISTS questions (
   id              SERIAL PRIMARY KEY,
   question        TEXT NOT NULL,
-  category        TEXT NOT NULL CHECK (category IN ('civil', 'affairs', 'edu', 'ict', 'religion', 'entrance')),
+  category        TEXT NOT NULL CHECK (category IN ('civil', 'affairs', 'edu', 'ict', 'religion', 'entrance', 'trcn')),
   option_a        TEXT NOT NULL,
   option_b        TEXT NOT NULL,
   option_c        TEXT NOT NULL,
@@ -80,7 +80,7 @@ INSERT INTO access_codes (code, label, category, active) VALUES
   ('EDU2025',      'Education Exam',             'edu',      true),
   ('ICT2025',      'ICT Exam',                   'ict',      true),
   ('RELIGION2025', 'Religion Exam',              'religion', true),
-  ('ENTRANCE2025', 'Common Entrance Exam',       'entrance', true)
+  ('ENTRANCE2025', 'Common Entrance Exam',       'entrance', true),
    ('TRCN2025', 'TRCN Ptactice Exam',       'trcn', true)
 ON CONFLICT (code) DO NOTHING;
 
@@ -399,8 +399,8 @@ INSERT INTO questions (question, category, option_a, option_b, option_c, option_
 ('Which Nigerian president introduced the "War Against Indiscipline" (WAI)?', 'entrance', 'Olusegun Obasanjo', 'Ibrahim Babangida', 'Muhammadu Buhari', 'Ernest Shonekan', 2),
 ('The word "the" is an example of which part of speech?', 'entrance', 'Pronoun', 'Adjective', 'Article', 'Preposition', 2),
 ('What is the area of a rectangle with length 8cm and width 5cm?', 'entrance', '26 cm squared', '30 cm squared', '40 cm squared', '13 cm squared', 2),
-('Which of these animals is nocturnal (active at night)?', 'entrance', 'Eagle', 'Butterfly', 'Owl', 'Lizard', 2)
-  
+('Which of these animals is nocturnal (active at night)?', 'entrance', 'Eagle', 'Butterfly', 'Owl', 'Lizard', 2),
+
   -- ── TRCN PRACTICE QUESTIONS (100) ──
 ('Education primarily aims at: ', 'trcn', 'Wealth acquisition', 'Total development of the individual', 'Political control', 'Job creation', 1),
 ('The father of modern education is: ', 'trcn', 'Aristotle', 'Plato', 'John Dewey', 'Socrates', 2),
@@ -504,4 +504,3 @@ INSERT INTO questions (question, category, option_a, option_b, option_c, option_
 ('Education is key to: ', 'trcn', 'Failure', 'Development', 'Poverty', 'Ignorance', 1)
 
 ON CONFLICT DO NOTHING;
-
