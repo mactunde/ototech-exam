@@ -309,6 +309,7 @@
           <option value="ict">💻 ICT</option>
           <option value="religion">🕌 Religion</option>
           <option value="entrance">📝 Common Entrance</option>
+          <option value="trcn">📝 TRCN</option>
         </select>
       </div>
       <div class="field-row">
@@ -354,6 +355,7 @@
           <option value="ict">💻 ICT</option>
           <option value="religion">🕌 Religion</option>
           <option value="entrance">📝 Common Entrance</option>
+          <option value="trcn">📝 TRCN</option>
         </select>
       </div>
       <div style="background:#FFB80010;border:1px solid #FFB80030;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);margin-top:4px;">
@@ -448,7 +450,7 @@ function setupRealtime() {
       allQuestions.push(payload.new);
       renderQuestions(allQuestions);
       loadDashboard();
-      const catLabels={civil:'Civil Service',affairs:'Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance'};
+      const catLabels={civil:'Civil Service',affairs:'Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance',trcn:'TRCN'};
       showToast(`New question added to ${catLabels[payload.new.category]||payload.new.category}`, 'success');
     })
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'questions' }, payload => {
@@ -550,6 +552,7 @@ async function viewResult(id) {
       <div class="result-detail-row"><span>ICT</span><span>${r.ict_score||0}/10</span></div>
       <div class="result-detail-row"><span>Religion</span><span>${r.religion_score||0}/10</span></div>
       <div class="result-detail-row"><span>Common Entrance</span><span>${r.entrance_score||0}/10</span></div>
+      <div class="result-detail-row"><span>TRCN</span><span>${r.trcn_score||0}/100</span></div>
       <div class="result-detail-row"><span>Time Taken</span><span>${formatTime(r.time_taken_secs)}</span></div>
       <div class="result-detail-row"><span>Submitted</span><span>${fmtDate(r.taken_at)}</span></div>
     </div>
@@ -610,7 +613,7 @@ function renderQuestions(rows) {
 
   const tbody = document.getElementById('q-tbody');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="es-icon">📝</div><p>No questions yet</p></div></td></tr>';return;}
-  const catLabels={civil:'📋 Civil Service',affairs:'🌍 Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Entrance'};
+  const catLabels={civil:'📋 Civil Service',affairs:'🌍 Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Entrance',trcn:'📝 TRCN'};
   tbody.innerHTML = rows.map((q,i)=>`
     <tr>
       <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;">${q.id}</td>
@@ -703,11 +706,11 @@ async function loadCodes() {
   if(!data||!data.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state"><div class="es-icon">🔑</div><p>No access codes yet</p></div></td></tr>';return;}
   const catLabels = {
     civil:'📋 Civil Service', affairs:'🌍 Current Affairs', edu:'🎓 Education',
-    ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance'
+    ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance', trcn:'📝 TRCN'
   };
   const catBadge = {
     civil:'badge-green', affairs:'badge-gold', edu:'badge-blue',
-    ict:'badge-blue', religion:'badge-gold', entrance:'badge-green'
+    ict:'badge-blue', religion:'badge-gold', entrance:'badge-green', trcn:'badge-blue'
   };
   tbody.innerHTML = data.map(c=>`
     <tr>
