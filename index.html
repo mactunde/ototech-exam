@@ -931,7 +931,7 @@ h1 {
       Explore the <span>Future</span><br>of Learning With Us
     </div>
     <p class="hero-desc">
-      Engage with dynamic exam questions across Civil Service, Current Affairs, Education, ICT, Religion and Common Entrance — building competence and confidence.
+      Engage with dynamic exam questions across Civil Service, Current Affairs, Education, ICT, Religion, Common Entrance and TRCN Practice Questions — building competence and confidence.
     </p>
   </div>
   <div class="hero-decorative">
@@ -941,6 +941,7 @@ h1 {
     <div class="hero-deco-card"><div class="dc-icon">💻</div><div class="dc-label">ICT</div></div>
     <div class="hero-deco-card"><div class="dc-icon">🕌</div><div class="dc-label">Religion</div></div>
     <div class="hero-deco-card"><div class="dc-icon">📝</div><div class="dc-label">Entrance</div></div>
+    <div class="hero-deco-card"><div class="dc-icon">📝</div><div class="dc-label">TRCN Questions</div></div>
   </div>
 </div>
 
@@ -993,6 +994,7 @@ h1 {
           <div class="lock-feat"><div class="lock-feat-icon">💻</div><span>ICT</span></div>
           <div class="lock-feat"><div class="lock-feat-icon">🕌</div><span>Religion</span></div>
           <div class="lock-feat"><div class="lock-feat-icon">📝</div><span>Common Entrance</span></div>
+          <div class="lock-feat"><div class="lock-feat-icon">📝</div><span>TRCN Questions</span></div>
         </div>
       </div>
 
@@ -1095,6 +1097,11 @@ h1 {
           <div class="csc-name">Common Entrance</div>
           <div class="csc-count">50 Questions</div>
         </div>
+        <div class="cat-select-card" data-cat="trcn" onclick="selectCategory('trcn')">
+          <div class="csc-icon">📝</div>
+          <div class="csc-name">TRCN Questions</div>
+          <div class="csc-count">100 Questions</div>
+        </div>
       </div>
       <div class="cat-select-error" id="cat-select-error">⚠ Please select an exam category.</div>
     </div>
@@ -1119,7 +1126,7 @@ h1 {
     <div class="stats-strip">
       <div class="meta-card"><div class="num" style="color:var(--amber)" id="meta-qcount">50</div><div class="lbl">Questions</div></div>
       <div class="meta-card"><div class="num" style="color:var(--green)">25m</div><div class="lbl">Total Time</div></div>
-      <div class="meta-card"><div class="num" style="color:var(--blue)">6</div><div class="lbl">Categories</div></div>
+      <div class="meta-card"><div class="num" style="color:var(--blue)">7</div><div class="lbl">Categories</div></div>
     </div>
 
     <div class="cat-tags" id="welcome-cat-tags">
@@ -1129,6 +1136,7 @@ h1 {
       <div class="tag ict">💻 ICT</div>
       <div class="tag religion">🕌 Religion</div>
       <div class="tag entrance">📝 Common Entrance</div>
+      <div class="tag trcn">📝 TRCN Questions</div>
     </div>
 
     <button class="btn-full" onclick="startExam()">Begin Examination →</button>
@@ -1188,6 +1196,7 @@ h1 {
       <div class="cat-row"><div class="cat-head"><span style="color:#6A1B9A">💻 ICT</span><span id="cb-ict">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-ict" style="width:0%;background:#6A1B9A"></div></div></div>
       <div class="cat-row"><div class="cat-head"><span style="color:#00695C">🕌 Religion</span><span id="cb-religion">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-religion" style="width:0%;background:#00695C"></div></div></div>
       <div class="cat-row"><div class="cat-head"><span style="color:#AD1457">📝 Common Entrance</span><span id="cb-entrance">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-entrance" style="width:0%;background:#AD1457"></div></div></div>
+      <div class="cat-row"><div class="cat-head"><span style="color:#3f753C">📝 TRCN </span><span id="cb-trcn">0/10</span></div><div class="cat-bar-bg"><div class="cat-bar-fill" id="cbar-trcn" style="width:0%;background:#3f753C"></div></div></div>
     </div>
 
     <div id="review-container"></div>
@@ -1527,6 +1536,108 @@ const FALLBACK_QUESTIONS = [
   {id:298,cat:'entrance',q:'The word "the" is an example of which part of speech?',options:['Pronoun','Adjective','Article','Preposition'],answer:2},
   {id:299,cat:'entrance',q:'What is the area of a rectangle with length 8cm and width 5cm?',options:['26cm²','30cm²','40cm²','13cm²'],answer:2},
   {id:300,cat:'entrance',q:'Which of these animals is nocturnal (active at night)?',options:['Eagle','Butterfly','Owl','Lizard'],answer:2}
+
+   // ── TRCN (100) ──
+{id:1,cat:'education',q:'Education primarily aims at:',options:['Wealth acquisition','Total development of the individual','Political control','Job creation'],answer:1},
+{id:2,cat:'education',q:'The father of modern education is:',options:['Aristotle','Plato','John Dewey','Socrates'],answer:2},
+{id:3,cat:'education',q:'The term education is derived from:',options:['Educare','Educatum','Educere','All of the above'],answer:3},
+{id:4,cat:'education',q:'Formal education takes place in:',options:['Home','School','Market','Church'],answer:1},
+{id:5,cat:'education',q:'Informal education is:',options:['Structured learning','Classroom-based','Unplanned learning','Government regulated'],answer:2},
+{id:6,cat:'education',q:'The philosophy that emphasizes experience is:',options:['Idealism','Pragmatism','Realism','Existentialism'],answer:1},
+{id:7,cat:'education',q:'Education for self-reliance was introduced by:',options:['Obafemi Awolowo','Nnamdi Azikiwe','Tai Solarin','Shehu Shagari'],answer:2},
+{id:8,cat:'education',q:'The Nigerian National Policy on Education was first introduced in:',options:['1960','1977','1981','1999'],answer:1},
+{id:9,cat:'education',q:'Curriculum refers to:',options:['Scheme of work','All learning experiences','Textbooks only','Lesson plan'],answer:1},
+{id:10,cat:'education',q:'Hidden curriculum refers to:',options:['Official syllabus','Unintended learning outcomes','Examination topics','Lesson notes'],answer:1},
+{id:11,cat:'psychology',q:'Learning is defined as:',options:['Permanent change in behavior','Temporary change','Physical growth','Emotional reaction'],answer:0},
+{id:12,cat:'psychology',q:'The theory of cognitive development was propounded by:',options:['Skinner','Piaget','Pavlov','Thorndike'],answer:1},
+{id:13,cat:'psychology',q:'Reinforcement is associated with:',options:['Behaviorism','Cognitivism','Humanism','Constructivism'],answer:0},
+{id:14,cat:'psychology',q:'Classical conditioning was developed by:',options:['Skinner','Pavlov','Watson','Thorndike'],answer:1},
+{id:15,cat:'psychology',q:'Trial and error theory was proposed by:',options:['Thorndike','Piaget','Freud','Maslow'],answer:0},
+{id:16,cat:'psychology',q:'Intelligence quotient measures:',options:['Emotional ability','Mental ability','Physical strength','Social skill'],answer:1},
+{id:17,cat:'psychology',q:'Motivation can be:',options:['Intrinsic only','Extrinsic only','Both intrinsic and extrinsic','None'],answer:2},
+{id:18,cat:'psychology',q:'Maslow hierarchy starts with:',options:['Esteem needs','Physiological needs','Safety needs','Love needs'],answer:1},
+{id:19,cat:'psychology',q:'Learning plateau refers to:',options:['Decline in learning','No progress in learning','Rapid learning','Forgetting'],answer:1},
+{id:20,cat:'psychology',q:'Transfer of learning occurs when:',options:['Learning affects another situation','Learning stops','Learning is forgotten','Learning is slow'],answer:0},
+{id:21,cat:'methods',q:'Lecture method is best for:',options:['Small groups','Large classes','Individual learning','Practical lessons'],answer:1},
+{id:22,cat:'methods',q:'Discussion method encourages:',options:['Passive learning','Participation','Memorization','Silence'],answer:1},
+{id:23,cat:'methods',q:'Demonstration method is suitable for:',options:['Theory','Practical skills','Debate','Storytelling'],answer:1},
+{id:24,cat:'methods',q:'Play-way method is used in:',options:['Secondary school','Tertiary','Early childhood','Adult education'],answer:2},
+{id:25,cat:'methods',q:'Project method was developed by:',options:['Kilpatrick','Dewey','Montessori','Piaget'],answer:0},
+{id:26,cat:'methods',q:'Inquiry method promotes:',options:['Memorization','Critical thinking','Copying','Silence'],answer:1},
+{id:27,cat:'methods',q:'Team teaching involves:',options:['One teacher','Two or more teachers','Students only','Parents'],answer:1},
+{id:28,cat:'methods',q:'The best method for skill acquisition is:',options:['Lecture','Demonstration','Dictation','Reading'],answer:1},
+{id:29,cat:'methods',q:'Field trip enhances:',options:['Abstract learning','Practical experience','Memorization','Writing'],answer:1},
+{id:30,cat:'methods',q:'Role play develops:',options:['Writing','Social skills','Drawing','Reading'],answer:1},
+{id:31,cat:'management',q:'Classroom management involves:',options:['Punishment','Organization of class activities','Teaching only','Writing notes'],answer:1},
+{id:32,cat:'management',q:'Effective classroom control requires:',options:['Fear','Discipline','Violence','Noise'],answer:1},
+{id:33,cat:'management',q:'Seating arrangement should:',options:['Ignore learners','Enhance learning','Cause distraction','Be random'],answer:1},
+{id:34,cat:'management',q:'A good teacher should be:',options:['Harsh','Friendly and firm','Silent','Aggressive'],answer:1},
+{id:35,cat:'management',q:'Noise in class can be reduced by:',options:['Shouting','Engagement','Ignoring','Punishment'],answer:1},
+{id:36,cat:'management',q:'Classroom rules should be:',options:['Hidden','Clear','Complex','Strict only'],answer:1},
+{id:37,cat:'management',q:'Time management helps:',options:['Delay learning','Improve efficiency','Waste time','Reduce teaching'],answer:1},
+{id:38,cat:'management',q:'A disruptive learner should be:',options:['Ignored','Guided','Punished always','Sent home'],answer:1},
+{id:39,cat:'management',q:'Positive reinforcement means:',options:['Punishment','Rewarding good behavior','Ignoring','Shouting'],answer:1},
+{id:40,cat:'management',q:'Teacher authority should be:',options:['Abused','Controlled','Ignored','Excessive'],answer:1},
+{id:41,cat:'curriculum',q:'Scheme of work is:',options:['Daily plan','Weekly breakdown','Term plan','Year plan'],answer:2},
+{id:42,cat:'curriculum',q:'Lesson plan is:',options:['General guide','Detailed teaching plan','Curriculum','Scheme'],answer:1},
+{id:43,cat:'curriculum',q:'Behavioral objectives must be:',options:['Vague','Measurable','Complex','Hidden'],answer:1},
+{id:44,cat:'curriculum',q:'Bloom taxonomy includes:',options:['Knowledge','Comprehension','Application','All of the above'],answer:3},
+{id:45,cat:'curriculum',q:'Evaluation helps to:',options:['Punish students','Measure learning','Waste time','Delay teaching'],answer:1},
+{id:46,cat:'curriculum',q:'Continuous assessment is:',options:['One-time exam','Periodic evaluation','Final exam','Test only'],answer:1},
+{id:47,cat:'curriculum',q:'Curriculum development involves:',options:['Planning','Implementation','Evaluation','All of the above'],answer:3},
+{id:48,cat:'curriculum',q:'Teaching aids are used to:',options:['Decorate class','Enhance understanding','Waste time','Punish students'],answer:1},
+{id:49,cat:'curriculum',q:'Chalkboard is:',options:['Audio aid','Visual aid','Audio-visual','None'],answer:1},
+{id:50,cat:'curriculum',q:'ICT in education improves:',options:['Laziness','Learning','Noise','Confusion'],answer:1},
+{id:51,cat:'evaluation',q:'Test validity means:',options:['Accuracy','Reliability','Difficulty','Length'],answer:0},
+{id:52,cat:'evaluation',q:'Reliability refers to:',options:['Consistency','Accuracy','Validity','Test length'],answer:0},
+{id:53,cat:'evaluation',q:'Formative evaluation occurs:',options:['During learning','After learning','Before learning','Never'],answer:0},
+{id:54,cat:'evaluation',q:'Summative evaluation occurs:',options:['During lesson','End of program','Beginning','Midway'],answer:1},
+{id:55,cat:'evaluation',q:'Objective test includes:',options:['Essay','MCQ','Story','Debate'],answer:1},
+{id:56,cat:'evaluation',q:'Essay test measures:',options:['Guessing','Expression','Memory only','Speed'],answer:1},
+{id:57,cat:'evaluation',q:'Standardized test is:',options:['Informal','Formal','Local','Personal'],answer:1},
+{id:58,cat:'evaluation',q:'Grading helps:',options:['Rank students','Punish','Ignore','Delay'],answer:0},
+{id:59,cat:'evaluation',q:'Diagnostic test identifies:',options:['Strength','Weakness','Both','None'],answer:2},
+{id:60,cat:'evaluation',q:'Evaluation tools include:',options:['Test','Observation','Interview','All'],answer:3},
+{id:61,cat:'guidance',q:'Guidance is:',options:['Punishment','Direction','Control','Force'],answer:1},
+{id:62,cat:'guidance',q:'Counseling involves:',options:['Advice','Interaction','Guidance','All'],answer:3},
+{id:63,cat:'guidance',q:'School counselor helps:',options:['Teaching','Student development','Punishment','Writing'],answer:1},
+{id:64,cat:'guidance',q:'Career guidance helps:',options:['Job choice','Discipline','Punishment','Writing'],answer:0},
+{id:65,cat:'guidance',q:'Peer pressure affects:',options:['Behavior','Learning','Decisions','All'],answer:3},
+{id:66,cat:'guidance',q:'Counseling is:',options:['One-way','Two-way','No way','Forced'],answer:1},
+{id:67,cat:'guidance',q:'Emotional problems affect:',options:['Learning','Health','Behavior','All'],answer:3},
+{id:68,cat:'guidance',q:'Guidance services include:',options:['Placement','Orientation','Counseling','All'],answer:3},
+{id:69,cat:'guidance',q:'Confidentiality is:',options:['Sharing info','Keeping secrets','Ignoring','Telling all'],answer:1},
+{id:70,cat:'guidance',q:'Counseling requires:',options:['Trust','Fear','Punishment','Silence'],answer:0},
+{id:71,cat:'sociology',q:'Society influences:',options:['Education','Learning','Behavior','All'],answer:3},
+{id:72,cat:'sociology',q:'Culture is:',options:['Beliefs and values','Food only','Clothes only','Language only'],answer:0},
+{id:73,cat:'sociology',q:'Socialization occurs in:',options:['Family','School','Community','All'],answer:3},
+{id:74,cat:'sociology',q:'Education promotes:',options:['Ignorance','Development','Violence','Poverty'],answer:1},
+{id:75,cat:'sociology',q:'Norms are:',options:['Rules','Laws','Values','Habits'],answer:0},
+{id:76,cat:'sociology',q:'Values guide:',options:['Behavior','Teaching','Learning','All'],answer:3},
+{id:77,cat:'sociology',q:'Education reduces:',options:['Poverty','Illiteracy','Ignorance','All'],answer:3},
+{id:78,cat:'sociology',q:'Social change is:',options:['Static','Dynamic','Fixed','Slow only'],answer:1},
+{id:79,cat:'sociology',q:'School is a:',options:['Social institution','Market','Bank','Church'],answer:0},
+{id:80,cat:'sociology',q:'Teacher is:',options:['Leader','Facilitator','Guide','All'],answer:3},
+{id:81,cat:'professional',q:'TRCN stands for:',options:['Teachers Registration Council of Nigeria','Training Council','Teaching Reform Council','None'],answer:0},
+{id:82,cat:'professional',q:'Teaching is a:',options:['Job','Profession','Hobby','Skill'],answer:1},
+{id:83,cat:'professional',q:'Professional ethics include:',options:['Honesty','Integrity','Discipline','All'],answer:3},
+{id:84,cat:'professional',q:'Teacher should:',options:['Abuse learners','Guide learners','Ignore learners','Punish always'],answer:1},
+{id:85,cat:'professional',q:'Code of conduct ensures:',options:['Discipline','Chaos','Noise','Conflict'],answer:0},
+{id:86,cat:'professional',q:'Professional development means:',options:['Learning continuously','Stopping learning','Ignoring training','None'],answer:0},
+{id:87,cat:'professional',q:'Teacher registration is done by:',options:['WAEC','TRCN','JAMB','NECO'],answer:1},
+{id:88,cat:'professional',q:'A teacher must be:',options:['Licensed','Registered','Qualified','All'],answer:3},
+{id:89,cat:'professional',q:'Teaching requires:',options:['Skills','Knowledge','Attitude','All'],answer:3},
+{id:90,cat:'professional',q:'Teacher role includes:',options:['Teaching','Mentoring','Guiding','All'],answer:3},
+{id:91,cat:'general',q:'UBE stands for:',options:['Universal Basic Education','United Basic Education','Universal Board','None'],answer:0},
+{id:92,cat:'general',q:'Primary education lasts:',options:['3 years','6 years','9 years','12 years'],answer:1},
+{id:93,cat:'general',q:'Secondary education lasts:',options:['3 years','6 years','9 years','12 years'],answer:1},
+{id:94,cat:'general',q:'WAEC conducts:',options:['Primary exams','Secondary exams','Tertiary exams','None'],answer:1},
+{id:95,cat:'general',q:'NECO is:',options:['Exam body','School','Ministry','Bank'],answer:0},
+{id:96,cat:'general',q:'Inclusive education means:',options:['Excluding learners','Equal learning opportunity','Special school only','None'],answer:1},
+{id:97,cat:'general',q:'Special education is for:',options:['All learners','Disabled learners','Teachers','Parents'],answer:1},
+{id:98,cat:'general',q:'ICT means:',options:['Information Communication Technology','Internet Communication','Internal Tech','None'],answer:0},
+{id:99,cat:'general',q:'Literacy means:',options:['Reading and writing','Talking','Drawing','Singing'],answer:0},
+{id:100,cat:'general',q:'Education is key to:',options:['Failure','Development','Poverty','Ignorance'],answer:1}
 ];
 
 // ══════════════════════════════════════════════════
@@ -1575,6 +1686,7 @@ const ACCESS_CODE_MAP = {
   ict:      ['ICT2025'],
   religion: ['RELIGION2025'],
   entrance: ['ENTRANCE2025']
+  trcn:     ['TRCN2025']
 };
 
 // ══════════════════════════════════════════════════
@@ -1671,6 +1783,7 @@ function checkCode() {
       ict:      { label:'ICT',                   emoji:'💻' },
       religion: { label:'Religion',              emoji:'🕌' },
       entrance: { label:'Common Entrance',       emoji:'📝' }
+      trcn:     { label:'TRCN',                  emoji:'📝' }
     };
     const cm = catMeta[matchedCategory];
     // Update the lock screen sub-text to hint the category
@@ -1739,7 +1852,8 @@ function prepareRegistrationScreen() {
     const catLabels = {
       civil: 'Civil Service Rules', affairs: 'Current Affairs',
       edu: 'Education', ict: 'ICT',
-      religion: 'Religion', entrance: 'Common Entrance'
+      religion: 'Religion', entrance: 'Common Entrance',
+      trcn: 'TRCN'
     };
     lockBanner.textContent = `🔒 Your access code has locked you into: ${catLabels[unlockedCategory]}`;
     lockBanner.style.display = 'block';
@@ -1773,6 +1887,7 @@ async function submitRegistration() {
     ict:     { label:'ICT',                   emoji:'💻', color:'var(--ict)',      count: QUESTIONS.filter(q=>q.cat==='ict').length },
     religion:{ label:'Religion',              emoji:'🕌', color:'var(--religion)', count: QUESTIONS.filter(q=>q.cat==='religion').length },
     entrance:{ label:'Common Entrance',       emoji:'📝', color:'var(--entrance)', count: QUESTIONS.filter(q=>q.cat==='entrance').length },
+    trcn:    { label:'TRCN',                  emoji:'📝', color:'var(--trcn)',     count: QUESTIONS.filter(q=>q.cat==='trcn').length },
   };
   const cm = catMeta[selectedCategory];
   const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -1830,7 +1945,7 @@ function renderQuestion() {
   document.getElementById('q-total').textContent = total;
   document.getElementById('q-text').textContent = q.q;
   document.getElementById('progress-bar').style.width = ((currentIndex/total)*100)+'%';
-  const labels={civil:'Civil Service',affairs:'Current Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance'};
+  const labels={civil:'Civil Service',affairs:'Current Affairs',edu:'Education',ict:'ICT',religion:'Religion',entrance:'Common Entrance',trcn:'TRCN'};
   const pill = document.getElementById('cat-pill');
   pill.textContent = labels[q.cat];
   pill.className = 'category-pill ' + q.cat;
@@ -1999,7 +2114,7 @@ async function saveResult({correct,wrong,skipped,pct,grade,catScores,catTotals})
 function buildReview() {
   const container=document.getElementById('review-container');
   container.innerHTML='';
-  const catLabels={civil:'📋 Civil Service Rules',affairs:'🌍 Current Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Common Entrance'};
+  const catLabels={civil:'📋 Civil Service Rules',affairs:'🌍 Current Affairs',edu:'🎓 Education',ict:'💻 ICT',religion:'🕌 Religion',entrance:'📝 Common Entrance',trcn:'📝 TRCN'};
   ['civil','affairs','edu','ict','religion','entrance'].forEach(cat=>{
     const qs=shuffledQuestions.map((q,i)=>({q,i})).filter(({q})=>q.cat===cat);
     if(!qs.length) return;
@@ -2092,7 +2207,7 @@ function setupQuestionRealtime() {
 // Refresh all visible question counts whenever QUESTIONS array changes
 function refreshCategoryCountsIfVisible() {
   // 1. Update ALL registration screen category cards
-  const cats = ['civil','affairs','edu','ict','religion','entrance'];
+  const cats = ['civil','affairs','edu','ict','religion','entrance','trcn'];
   cats.forEach(cat => {
     const card = document.querySelector(`.cat-select-card[data-cat="${cat}"] .csc-count`);
     if (card) {
@@ -2110,7 +2225,7 @@ function refreshCategoryCountsIfVisible() {
   if (tagEl && tagEl.querySelector('.tag')) {
     const catMeta = {
       civil:'📋 Civil Service Rules', affairs:'🌍 Current Affairs', edu:'🎓 Education',
-      ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance'
+      ict:'💻 ICT', religion:'🕌 Religion', entrance:'📝 Common Entrance', trcn:'📝 TRCN'
     };
     tagEl.innerHTML = `<div class="tag ${selectedCategory}">${catMeta[selectedCategory]||selectedCategory} — ${count} Qs</div>`;
   }
@@ -2119,7 +2234,7 @@ function refreshCategoryCountsIfVisible() {
     const catMeta2 = {
       civil:{label:'Civil Service Rules',emoji:'📋'}, affairs:{label:'Current Affairs',emoji:'🌍'},
       edu:{label:'Education',emoji:'🎓'}, ict:{label:'ICT',emoji:'💻'},
-      religion:{label:'Religion',emoji:'🕌'}, entrance:{label:'Common Entrance',emoji:'📝'}
+      religion:{label:'Religion',emoji:'🕌'}, entrance:{label:'Common Entrance',emoji:'📝', trcn:{label:'TRCN',emoji:'📝'}
     };
     const cm = catMeta2[selectedCategory];
     if (cm) descEl.textContent = `You have selected: ${cm.emoji} ${cm.label}. Answer all ${count} questions within 25 minutes.`;
